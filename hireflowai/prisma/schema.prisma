@@ -44,16 +44,32 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  password      String?
+  id       String       @id @default(cuid())
+  name     String?
+  email    String       @unique
+  password String?
+  role     UserTypeEnum @default(ADMIN)
+
   emailVerified DateTime? @map("email_verified")
   image         String?
   accounts      Account[]
   sessions      Session[]
+  companyId     String?
+  company       Company?  @relation(fields: [companyId], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   @@map("users")
+}
+
+model Company {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  users     User[]
 }
 
 model VerificationToken {
@@ -63,4 +79,10 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verification_tokens")
+}
+
+enum UserTypeEnum {
+  SUPERUSER
+  ADMIN
+  HR
 }
