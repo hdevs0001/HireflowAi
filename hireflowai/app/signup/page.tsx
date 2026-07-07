@@ -26,7 +26,7 @@ export default function SignupPage() {
         <video
           src="/video/Finaloutput.mp4"
           autoPlay
-          // muted
+          muted
           loop
           playsInline
           className="absolute inset-0 h-full w-full object-cover"
