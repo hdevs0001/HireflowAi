@@ -80,7 +80,10 @@ model VerificationToken {
   @@unique([identifier, token])
   @@map("verification_tokens")
 }
-
+model Candidate{
+  id String @id @default(cuid())
+  
+}
 enum UserTypeEnum {
   SUPERUSER
   ADMIN

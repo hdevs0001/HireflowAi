@@ -1,9 +1,15 @@
-"use client";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 import { SignupForm } from "@/components/signup-form";
 import { GalleryVerticalEndIcon } from "lucide-react";
 
-export default function SignupPage() {
+export default async function SignupPage() {
+  const session = await auth();
+
+  if (session) {
+    redirect("/");
+  }
   return (
     <div className="grid min-h-screen lg:h-screen lg:overflow-hidden lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">
