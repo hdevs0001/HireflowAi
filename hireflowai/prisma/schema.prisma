@@ -63,13 +63,56 @@ model User {
 }
 
 model Company {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  address   String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-  users     User[]
+  id         String      @id @default(cuid())
+  name       String //name of the company 
+  email      String      @unique // email of the company
+  address    String? // address of the company
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @default(now())
+  users      User[]
+  widgets    Widget[]
+  candidates Candidate[]
+  interviews Interview[]
+}
+
+model Widget {
+  id             String   @id @default(cuid())
+  //Public identifier used in the embed script
+  widgetId       String   @unique @default(cuid())
+  // company that owns this widget 
+  companyId      String
+  company        Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  //Security checks
+  allowedDomains String[]
+  isActive       Boolean  @default(true)
+  //this is the metadata
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now())
+}
+
+model Candidate {
+  id              String              @id @default(cuid())
+  companyId       String
+  company         Company             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name            String
+  email           String              @unique
+  phone           String              @unique
+  resumeUrl       String
+  candidateStatus CandidateStatusEnum
+  aiScore         Float?
+  interviews      Interview[]
+}
+
+model Interview {
+  id              String          @id @default(cuid())
+  companyId       String
+  company         Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  candidateId     String
+  candidate       Candidate       @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  interviewLink   String?
+  interviewTime   String? //time for the interview
+  //this is the status of the interview
+  interViewStatus InterStatusEnum
 }
 
 model VerificationToken {
@@ -80,10 +123,20 @@ model VerificationToken {
   @@unique([identifier, token])
   @@map("verification_tokens")
 }
-model Candidate{
-  id String @id @default(cuid())
-  
+
+enum CandidateStatusEnum {
+  ACCEPTED
+  REJECTED
+  INTERVIEWING
+  PLACED
 }
+
+enum InterStatusEnum {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+}
+
 enum UserTypeEnum {
   SUPERUSER
   ADMIN
