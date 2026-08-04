@@ -1,23 +1,23 @@
 (() => {
-    // Find the container on the host website
-    const host = document.getElementById("hireflow-widget");
+  // Find the container on the host website
+  const host = document.getElementById("hireflow-widget");
 
-    if (!host) {
-        console.error("hireflow-widget container not found");
-        return;
-    }
+  if (!host) {
+    console.error("hireflow-widget container not found");
+    return;
+  }
 
-    // Prevent creating the widget twice
-    if (host.shadowRoot) {
-        return;
-    }
+  // Prevent creating the widget twice
+  if (host.shadowRoot) {
+    return;
+  }
 
-    // Create Shadow DOM
-    const shadow = host.attachShadow({
-        mode: "open",
-    });
+  // Create Shadow DOM
+  const shadow = host.attachShadow({
+    mode: "open",
+  });
 
-    shadow.innerHTML = `
+  shadow.innerHTML = `
 <style>
 
 *{
@@ -111,36 +111,31 @@ h2{
 </div>
 `;
 
-    const openBtn = shadow.querySelector(".open-btn");
-    const overlay = shadow.querySelector(".overlay");
-    const close = shadow.querySelector(".close");
-    const submit = shadow.querySelector(".submit");
+  const openBtn = shadow.querySelector(".open-btn");
+  const overlay = shadow.querySelector(".overlay");
+  const close = shadow.querySelector(".close");
+  const submit = shadow.querySelector(".submit");
 
-    openBtn.addEventListener("click", () => {
-        overlay.style.display = "flex";
-    });
+  openBtn.addEventListener("click", () => {
+    overlay.style.display = "flex";
+  });
 
-    close.addEventListener("click", () => {
-        overlay.style.display = "none";
-    });
+  close.addEventListener("click", () => {
+    overlay.style.display = "none";
+  });
 
-    overlay.addEventListener("click", (e) => {
-        if (e.target === overlay) {
-            overlay.style.display = "none";
-        }
-    });
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) {
+      overlay.style.display = "none";
+    }
+  });
 
-    submit.addEventListener("click", () => {
+  submit.addEventListener("click", () => {
+    const name = shadow.querySelector("#name").value;
+    const email = shadow.querySelector("#email").value;
 
-        const name = shadow.querySelector("#name").value;
-        const email = shadow.querySelector("#email").value;
+    alert(`Submitted\n\nName: ${name}\nEmail: ${email}`);
 
-        alert(
-            `Submitted\n\nName: ${name}\nEmail: ${email}`
-        );
-
-        overlay.style.display = "none";
-
-    });
-
+    overlay.style.display = "none";
+  });
 })();

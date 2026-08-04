@@ -1,8 +1,7 @@
 services:
   n8n:
-    image: docker.n8n.io/n8nio/n8n:latest
+    image: docker.n8n.io/n8nio/n8n:2.33.3-12d3f08
     container_name: n8n
-
     restart: unless-stopped
 
     ports:

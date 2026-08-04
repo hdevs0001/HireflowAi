@@ -11,20 +11,17 @@ import { StatCard } from "./statuscard";
 
 export interface DashboardStats {
   totalCandidates: number;
-  openJobs: number;
   interviewsToday: number;
   activeHR: number;
   resumesUploadedToday: number;
-  averageAIScore: number;
+  averageAIScore: number | null;
 }
 
 interface DashboardStatsProps {
   stats?: DashboardStats;
 }
 
-export function DashboardStats({
-  stats,
-}: DashboardStatsProps) {
+export function DashboardStats({ stats }: DashboardStatsProps) {
   const data = stats ?? {
     totalCandidates: 0,
     openJobs: 0,
@@ -43,22 +40,12 @@ export function DashboardStats({
       />
 
       <StatCard
-        title="Open Jobs"
-        value={data.openJobs}
-        icon={BriefcaseBusiness}
-      />
-
-      <StatCard
         title="Interviews Today"
         value={data.interviewsToday}
         icon={CalendarDays}
       />
 
-      <StatCard
-        title="Active HR"
-        value={data.activeHR}
-        icon={UserRoundCheck}
-      />
+      <StatCard title="Active HR" value={data.activeHR} icon={UserRoundCheck} />
 
       <StatCard
         title="Resume Uploads Today"
@@ -68,7 +55,7 @@ export function DashboardStats({
 
       <StatCard
         title="Average AI Score"
-        value={`${data.averageAIScore}%`}
+        value={data.averageAIScore === null ? "—" : `${data.averageAIScore}%`}
         icon={Star}
       />
     </section>

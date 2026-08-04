@@ -7,7 +7,14 @@ export interface Candidate {
   phone: string;
   resume: string;
   aiScore: number;
-  status: "Rejected" | "Interviewing" | "Accepted" | "Placed";
+  status:
+    | "REJECTED"
+    | "RECOMMENDED"
+    | "INTERVIEWING"
+    | "OFFERED"
+    | "ON_TRIAL"
+    | "PLACED"
+    | "WITHDRAW";
 }
 
 export async function getAllCandidates(): Promise<Candidate[]> {
@@ -19,7 +26,7 @@ export async function getAllCandidates(): Promise<Candidate[]> {
       phone: "+1 234 567 890",
       resume: "https://res.cloudinary.com/demo/raw/upload/resume1.pdf",
       aiScore: 91,
-      status: "Interviewing",
+      status: "INTERVIEWING",
     },
     {
       id: "2",
@@ -28,7 +35,7 @@ export async function getAllCandidates(): Promise<Candidate[]> {
       phone: "+1 123 456 789",
       resume: "https://res.cloudinary.com/demo/raw/upload/resume2.pdf",
       aiScore: 96,
-      status: "Accepted",
+      status: "RECOMMENDED",
     },
     {
       id: "3",
@@ -37,7 +44,7 @@ export async function getAllCandidates(): Promise<Candidate[]> {
       phone: "+1 765 432 109",
       resume: "https://res.cloudinary.com/demo/raw/upload/resume3.pdf",
       aiScore: 62,
-      status: "Rejected",
+      status: "REJECTED",
     },
     {
       id: "4",
@@ -46,7 +53,7 @@ export async function getAllCandidates(): Promise<Candidate[]> {
       phone: "+1 999 888 777",
       resume: "https://res.cloudinary.com/demo/raw/upload/resume4.pdf",
       aiScore: 89,
-      status: "Placed",
+      status: "PLACED",
     },
   ];
 }

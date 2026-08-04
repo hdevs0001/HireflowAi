@@ -55,24 +55,26 @@ model User {
   accounts      Account[]
   sessions      Session[]
   companyId     String?
+  hrStatus      HrStatus  @default(ENABLE)
   company       Company?  @relation(fields: [companyId], references: [id])
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
+  @@index([companyId, role, hrStatus])
   @@map("users")
 }
 
 model Company {
-  id         String      @id @default(cuid())
-  name       String //name of the company 
-  email      String      @unique // email of the company
-  address    String? // address of the company
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @default(now())
-  users      User[]
-  widgets    Widget[]
-  candidates Candidate[]
-  interviews Interview[]
+  id          String      @id @default(cuid())
+  companyName String //name of the company 
+  email       String      @unique // email of the company
+  address     String? // address of the company
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  users       User[]
+  widgets     Widget[]
+  candidates  Candidate[]
+  interviews  Interview[]
 }
 
 model Widget {
@@ -87,20 +89,49 @@ model Widget {
   isActive       Boolean  @default(true)
   //this is the metadata
   createdAt      DateTime @default(now())
-  updatedAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([companyId])
 }
 
 model Candidate {
   id              String              @id @default(cuid())
-  companyId       String
+  companyId       String // attach to every apply request
   company         Company             @relation(fields: [companyId], references: [id], onDelete: Cascade)
   name            String
-  email           String              @unique
-  phone           String              @unique
+  email           String
+  phone           String
   resumeUrl       String
-  candidateStatus CandidateStatusEnum
-  aiScore         Float?
-  interviews      Interview[]
+  resumePublicUrl String
+  candidateStatus CandidateStatusEnum @default(PROCESSING)
+
+  interviews   Interview[]
+  AIEvaluation AIEvaluation?
+
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@unique([companyId, email])
+  @@unique([companyId, phone])
+  @@index([companyId])
+}
+
+model AIEvaluation {
+  id              String           @id @default(cuid())
+  candidateId     String           @unique
+  candidate       Candidate        @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  aiScore         Int
+  skillsMatch     Int
+  experienceMatch Int
+  educationMatch  Int
+  projectMatch    Int
+  jobRelevance    Int
+  matchedSkills   String[]
+  missingSkills   String[]
+  reason          String
+  recommendation  AIRecommendation
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 }
 
 model Interview {
@@ -110,9 +141,14 @@ model Interview {
   candidateId     String
   candidate       Candidate       @relation(fields: [candidateId], references: [id], onDelete: Cascade)
   interviewLink   String?
-  interviewTime   String? //time for the interview
+  interviewTime   DateTime? //time for the interview
   //this is the status of the interview
   interViewStatus InterStatusEnum
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([companyId])
+  @@index([candidateId])
 }
 
 model VerificationToken {
@@ -125,6 +161,7 @@ model VerificationToken {
 }
 
 enum CandidateStatusEnum {
+  PROCESSING
   ACCEPTED
   REJECTED
   INTERVIEWING
@@ -141,4 +178,15 @@ enum UserTypeEnum {
   SUPERUSER
   ADMIN
   HR
+}
+
+enum AIRecommendation {
+  RECOMMEND
+  REVIEW
+  REJECT
+}
+
+enum HrStatus {
+  ENABLE
+  DISABLE
 }

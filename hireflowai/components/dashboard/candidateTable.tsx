@@ -12,14 +12,13 @@ import {
 } from "@/components/ui/table";
 
 import { Candidate } from "@/action/candidate";
+import { statusStyles } from "@/types/CandidateBadge";
 
 interface CandidateTableProps {
   candidates?: Candidate[];
 }
 
-export function CandidateTable({
-  candidates = [],
-}: CandidateTableProps) {
+export function CandidateTable({ candidates = [] }: CandidateTableProps) {
   return (
     <div className="overflow-hidden rounded-xl border bg-background">
       <Table>
@@ -37,9 +36,7 @@ export function CandidateTable({
         <TableBody>
           {candidates.map((candidate) => (
             <TableRow key={candidate.id}>
-              <TableCell className="font-medium">
-                {candidate.name}
-              </TableCell>
+              <TableCell className="font-medium">{candidate.name}</TableCell>
 
               <TableCell>{candidate.email}</TableCell>
 
@@ -55,20 +52,10 @@ export function CandidateTable({
                 </Link>
               </TableCell>
 
-              <TableCell>
-                {candidate.aiScore}%
-              </TableCell>
+              <TableCell>{candidate.aiScore}%</TableCell>
 
               <TableCell>
-                <Badge
-                  variant={
-                    candidate.status === "Accepted"
-                      ? "default"
-                      : candidate.status === "Rejected"
-                      ? "destructive"
-                      : "secondary"
-                  }
-                >
+                <Badge className={statusStyles[candidate.status]}>
                   {candidate.status}
                 </Badge>
               </TableCell>
