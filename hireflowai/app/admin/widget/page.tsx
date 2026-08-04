@@ -1,3 +1,9 @@
+import React from 'react'
+
 export default function page() {
-  return <div>widget page</div>;
+  return (
+    <div>
+      widget
+    </div>
+  )
 }

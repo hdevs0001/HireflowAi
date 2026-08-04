@@ -81,6 +81,7 @@ model Widget {
   id             String   @id @default(cuid())
   //Public identifier used in the embed script
   widgetId       String   @unique @default(cuid())
+  WidgetName     String?
   // company that owns this widget 
   companyId      String
   company        Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
@@ -103,13 +104,13 @@ model Candidate {
   phone           String
   resumeUrl       String
   resumePublicUrl String
-  candidateStatus CandidateStatusEnum @default(PROCESSING)
+  candidateStatus CandidateStatusEnum @default(UNEVALUATED)
 
   interviews   Interview[]
   AIEvaluation AIEvaluation?
 
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([companyId, email])
   @@unique([companyId, phone])
@@ -161,11 +162,14 @@ model VerificationToken {
 }
 
 enum CandidateStatusEnum {
-  PROCESSING
-  ACCEPTED
   REJECTED
+  RECOMMENDED
   INTERVIEWING
+  OFFERED
+  ON_TRIAL
   PLACED
+  WITHDRAW
+  UNEVALUATED
 }
 
 enum InterStatusEnum {

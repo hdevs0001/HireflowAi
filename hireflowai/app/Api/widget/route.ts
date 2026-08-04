@@ -32,28 +32,6 @@ export async function POST(req: NextRequest) {
     const upload = await uploadResume(verifiedResume);
     console.log(upload);
 
-    // const response = await fetch(upload.secure_url);
-
-    // if (!response.ok) {
-    //   throw new Error(`Failed to download PDF: ${response.status}`);
-    // }
-
-    //   const bytes = await response.arrayBuffer();
-
-    //   const uint8Array = new Uint8Array(bytes);
-
-    //   const text = await extractText(uint8Array);
-    // const resumeText = text.text.join("\n");
-
-    // const cleanedText = resumeText
-    //   .replace(/\r\n/g, "\n")
-    //   .replace(/[ \t]+/g, " ")
-    //   .replace(/\n{3,}/g, "\n\n")
-    //   .trim();
-
-    // console.log(cleanedText);
-
-    //  create the client/candidate in the database also check for the existing user if there
 
     // CHECK FOR THE EXISTING USER EMAIL AND PHONENUMBER IF THERE THEN RETURN A RESPONSE USER EXISTS
 

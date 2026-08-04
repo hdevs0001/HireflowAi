@@ -7,4 +7,5 @@ export const statusStyles: Record<Candidate["status"], string> = {
   ON_TRIAL: "!bg-yellow-100 !text-yellow-700 !border-yellow-200",
   PLACED: "!bg-emerald-200 !text-emerald-700 !border-emerald-200",
   WITHDRAW: "!bg-gray-100 !text-gray-700 !border-gray-200",
+  UNEVALUATED: "!bg-slate-100 !text-slate-600 !border-slate-200",
 };
