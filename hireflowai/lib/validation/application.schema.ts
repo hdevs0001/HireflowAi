@@ -19,8 +19,8 @@ export const applicationSchema = z.object({
     .nullable(),
 
   widgetId: z.string().min(1, "Widget ID is required"),
-
-  turnstileToken: z.string(),
+  porigin: z.url(),
+  // turnstileToken: z.string(),
 });
 
 export type ApplicationFormData = z.infer<typeof applicationSchema>;

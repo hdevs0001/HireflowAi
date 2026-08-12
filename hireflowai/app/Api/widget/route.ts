@@ -14,13 +14,13 @@ export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
     const parsed = getApplicatonData(formData);
-    // const parsed = result.data;
 
     //  Check if it's missing, null, or an empty string
-    const origin = req.headers.get("origin");
+
+    const origin = parsed.porigin;
     const widget = await validateWidget(parsed.widgetId, origin);
 
-    await turnstileVerfication(parsed.turnstileToken);
+    // await turnstileVerfication(parsed.turnstileToken);
 
     //  BACKEND RESUME VALIDATION
 
@@ -31,7 +31,6 @@ export async function POST(req: NextRequest) {
 
     const upload = await uploadResume(verifiedResume);
     console.log(upload);
-
 
     // CHECK FOR THE EXISTING USER EMAIL AND PHONENUMBER IF THERE THEN RETURN A RESPONSE USER EXISTS
 
@@ -46,11 +45,11 @@ export async function POST(req: NextRequest) {
       });
       // start the bull_mq to build up the queue
 
-      await resumeQueue.add("process-resume", {
-        candidateId: candidate.id,
-        resumeUrl: candidate.resumeUrl,
-        companyId: candidate.companyId,
-      });
+      // await resumeQueue.add("process-resume", {
+      //   candidateId: candidate.id,
+      //   resumeUrl: candidate.resumeUrl,
+      //   companyId: candidate.companyId,
+      // });
     } catch (error) {
       try {
         await deleteResume(upload.public_id);
@@ -62,7 +61,7 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json(
-      { message: "Application submit successfully" },
+      { message: `Application submit successfully ${origin} ` },
       { status: 201 },
     );
   } catch (error) {

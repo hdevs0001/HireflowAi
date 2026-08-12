@@ -1,3 +1,5 @@
+import Redis from "ioredis";
+
 const redisConnection = {
   host: process.env.REDIS_HOST || "127.0.0.1",
   port: Number(process.env.REDIS_PORT || 6379),
@@ -6,4 +8,5 @@ const redisConnection = {
   // explaination
   //Don't give up on a Redis command after a fixed number of retries.
 };
+export const redis = new Redis(redisConnection);
 export default redisConnection;

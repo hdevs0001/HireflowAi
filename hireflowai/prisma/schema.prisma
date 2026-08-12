@@ -13,6 +13,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id       String       @id @default(cuid())
+  name     String?
+  email    String       @unique
+  password String?
+  role     UserTypeEnum @default(ADMIN)
+
+  emailVerified DateTime? @map("email_verified")
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  companyId     String?
+  hrStatus      HrStatus  @default(ENABLE)
+  company       Company?  @relation(fields: [companyId], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([companyId, role, hrStatus])
+  @@map("users")
+}
+
+//Auth.js prismaAdapter required models - used only for dashboard users
 model Account {
   id                String  @id @default(cuid())
   userId            String  @map("user_id")
@@ -43,84 +65,144 @@ model Session {
   @@map("sessions")
 }
 
-model User {
-  id       String       @id @default(cuid())
-  name     String?
-  email    String       @unique
-  password String?
-  role     UserTypeEnum @default(ADMIN)
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
 
-  emailVerified DateTime? @map("email_verified")
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  companyId     String?
-  hrStatus      HrStatus  @default(ENABLE)
-  company       Company?  @relation(fields: [companyId], references: [id])
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  @@index([companyId, role, hrStatus])
-  @@map("users")
+  @@unique([identifier, token])
+  @@map("verification_tokens")
 }
 
+// this is company/saas Tencancy 
 model Company {
-  id          String      @id @default(cuid())
-  companyName String //name of the company 
-  email       String      @unique // email of the company
-  address     String? // address of the company
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  users       User[]
-  widgets     Widget[]
-  candidates  Candidate[]
-  interviews  Interview[]
+  id           String        @id @default(cuid())
+  companyName  String //name of the company 
+  email        String        @unique // email of the company
+  address      String? // address of the company
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  users        User[]
+  widgets      Widget[]
+  candidates   Candidate[]
+  interviews   Interview[]
+  applications Application[]
+  jobs         Job[]
 }
 
 model Widget {
-  id             String   @id @default(cuid())
+  id             String        @id @default(cuid())
   //Public identifier used in the embed script
-  widgetId       String   @unique @default(cuid())
-  WidgetName     String?
+  widgetId       String        @unique @default(cuid())
+  widgetName     String?
   // company that owns this widget 
   companyId      String
-  company        Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  company        Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
   //Security checks
   allowedDomains String[]
-  isActive       Boolean  @default(true)
+  isActive       Boolean       @default(true)
   //this is the metadata
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  applications   Application[]
 
   @@index([companyId])
 }
 
+// this is the candidate model 
 model Candidate {
-  id              String              @id @default(cuid())
-  companyId       String // attach to every apply request
-  company         Company             @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  name            String
-  email           String
-  phone           String
-  resumeUrl       String
-  resumePublicUrl String
-  candidateStatus CandidateStatusEnum @default(UNEVALUATED)
-
-  interviews   Interview[]
-  AIEvaluation AIEvaluation?
+  id            String             @id @default(cuid())
+  companyId     String
+  company       Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name          String?
+  email         String?
+  phone         String?
+  googleSub     String?
+  emailVerified DateTime?
+  image         String?
+  accounts      CandidateAccount[]
+  sessions      CandidateSession[]
+  applications  Application[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([companyId, email])
+  interviews Interview[]
+
+  @@unique([companyId, email]) // ← lives here, where email actually is
   @@unique([companyId, phone])
+  @@unique([companyId, googleSub])
   @@index([companyId])
+}
+
+model CandidateAccount {
+  id                String  @id @default(cuid())
+  candidateId       String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+
+  candidate Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model CandidateSession {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  candidateId  String
+  expires      DateTime
+
+  candidate Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+}
+
+model CandidateVerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Application {
+  id String @id @default(cuid())
+
+  candidateId String
+  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  widgetId        String
+  widget          Widget              @relation(fields: [widgetId], references: [id], onDelete: Restrict)
+  jobId           String
+  job             Job                 @relation(fields: [jobId], references: [id], onDelete: Restrict)
+  resumeUrl       String?
+  resumePublicUrl String?
+  candidateStatus CandidateStatusEnum @default(UNEVALUATED)
+
+  interviews   Interview[]
+  aiEvaluation AIEvaluation?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([companyId])
+  @@index([candidateId])
+  @@index([widgetId])
+  @@index([jobId])
 }
 
 model AIEvaluation {
   id              String           @id @default(cuid())
-  candidateId     String           @unique
-  candidate       Candidate        @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  applicationId   String           @unique // ← one evaluation per application, not per candidate
+  application     Application      @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   aiScore         Int
   skillsMatch     Int
   experienceMatch Int
@@ -147,18 +229,26 @@ model Interview {
   interViewStatus InterStatusEnum
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
+  application     Application?    @relation(fields: [applicationId], references: [id])
+  applicationId   String?
 
   @@index([companyId])
   @@index([candidateId])
 }
 
-model VerificationToken {
-  identifier String
-  token      String
-  expires    DateTime
+model Job {
+  id          String   @id @default(cuid())
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  @@unique([identifier, token])
-  @@map("verification_tokens")
+  applications Application[]
+
+  @@index([companyId])
 }
 
 enum CandidateStatusEnum {

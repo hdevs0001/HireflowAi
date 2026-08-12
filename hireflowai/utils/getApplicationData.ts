@@ -8,7 +8,8 @@ export default function getApplicatonData(formData: FormData) {
     phoneNumber: formData.get("phoneNumber"),
     resumeFile: formData.get("resumeFile"),
     widgetId: formData.get("widgetId"),
-    turnstileToken: formData.get("turnstileToken"),
+    porigin: formData.get("porigin"),
+    // turnstileToken: formData.get("turnstileToken"),
   };
   const result = applicationSchema.safeParse(rawData);
   if (!result.success) {

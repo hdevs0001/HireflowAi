@@ -6,7 +6,6 @@ import Github from "next-auth/providers/github";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 import { LoginSchema } from "./lib/validation/auth";
-
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
 
@@ -24,6 +23,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
     Credentials({
+  
       credentials: {
         email: {},
         password: {},
@@ -98,3 +98,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
 });
+
