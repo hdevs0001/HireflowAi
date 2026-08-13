@@ -4,16 +4,14 @@ import { applicationSchema } from "@/lib/validation/application.schema";
 export default function getApplicatonData(formData: FormData) {
   const rawData = {
     fullName: formData.get("fullName"),
-    email: formData.get("email"),
     phoneNumber: formData.get("phoneNumber"),
     resumeFile: formData.get("resumeFile"),
-    widgetId: formData.get("widgetId"),
-    porigin: formData.get("porigin"),
-    // turnstileToken: formData.get("turnstileToken"),
+    parentOrigin: formData.get("parentOrigin"),
   };
+
   const result = applicationSchema.safeParse(rawData);
   if (!result.success) {
-    throw new ApiError(400, "inValid Data");
+    throw new ApiError(400, "Invalid data");
   }
   return result.data;
 }

@@ -122,8 +122,10 @@ export async function verifyBridgeToken(
   token: string,
 ): Promise<CandidateSessionData | null> {
   const sessionId = await redis.getdel(bridgeKey(token));
+
   if (!sessionId) return null;
   const session = await getCandidateSession(sessionId);
+
   if (!session || !session.verified) return null;
   return session;
 }

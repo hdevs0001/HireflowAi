@@ -9,4 +9,10 @@ const redisConnection = {
   //Don't give up on a Redis command after a fixed number of retries.
 };
 export const redis = new Redis(redisConnection);
+redis.on("connect", () => console.log("[redis] connected"));
+redis.on("error", (err) => console.error("[redis] error:", err));
+redis.on("ready", () => console.log("[redis] ready"));
+
+export { redisConnection };
+
 export default redisConnection;

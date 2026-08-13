@@ -1,26 +1,23 @@
-import z, { email } from "zod";
+import z from "zod";
+
 export const applicationSchema = z.object({
   fullName: z
     .string()
     .trim()
-    .min(2, "FullName must be at least 2 Characters")
-    .max(40, "full Name is to o long"),
-
-  email: z.email(),
+    .min(2, "Full name must be at least 2 characters")
+    .max(40, "Full name is too long"),
 
   phoneNumber: z
     .string()
-    .min(10, "Invaild phone Number")
-    .max(10, "invalid phone Number"),
-  resumeFile: z
-    .instanceof(File, {
-      message: "Resume file is Required",
-    })
-    .nullable(),
+    .trim()
+    .min(10, "Invalid phone number")
+    .max(10, "Invalid phone number"),
 
-  widgetId: z.string().min(1, "Widget ID is required"),
-  porigin: z.url(),
-  // turnstileToken: z.string(),
+  resumeFile: z.instanceof(File, {
+    message: "Resume file is required",
+  }),
+
+  parentOrigin: z.url("Invalid origin"),
 });
 
 export type ApplicationFormData = z.infer<typeof applicationSchema>;
