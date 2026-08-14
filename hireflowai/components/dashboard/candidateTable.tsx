@@ -43,16 +43,22 @@ export function CandidateTable({ candidates = [] }: CandidateTableProps) {
               <TableCell>{candidate.phone}</TableCell>
 
               <TableCell>
-                <Link
-                  href={candidate.resume}
-                  target="_blank"
-                  className="text-blue-600 hover:underline"
-                >
-                  View Resume
-                </Link>
+                {candidate.resume ? (
+                  <Link
+                    href={candidate.resume}
+                    target="_blank"
+                    className="text-blue-600 hover:underline"
+                  >
+                    View Resume
+                  </Link>
+                ) : (
+                  <span className="text-muted-foreground">No resume</span>
+                )}
               </TableCell>
 
-              <TableCell>{candidate.aiScore}%</TableCell>
+              <TableCell>
+                {candidate.aiScore !== null ? `${candidate.aiScore}%` : "—"}
+              </TableCell>
 
               <TableCell>
                 <Badge className={statusStyles[candidate.status]}>

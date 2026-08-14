@@ -1,15 +1,15 @@
 "use server";
 
 import { prisma } from "@/prisma";
-import { getCurrentUser } from "@/utils/getCurrentUser"; // adjust path
+import { getCurrentUser } from "@/utils/getCurrentUser";
 
 export interface Candidate {
   id: string;
-  name: string;
-  email: string;
-  phone: string;
-  resume: string;
-  aiScore: number;
+  name: string | null;
+  email: string | null;
+  phone: string | null;
+  resume: string | null;
+  aiScore: number | null;
   status:
     | "REJECTED"
     | "RECOMMENDED"
@@ -22,51 +22,55 @@ export interface Candidate {
 }
 
 export async function getAllCandidates(): Promise<Candidate[]> {
-  // 1. Authentication check
   const user = await getCurrentUser();
 
   if (!user) {
     throw new Error("Unauthorized");
   }
 
-  // 2. Company check
   if (!user.companyId) {
     throw new Error("User is not associated with a company");
   }
 
-  // 3. Fetch ONLY candidates belonging to this company
   const candidates = await prisma.candidate.findMany({
     where: {
       companyId: user.companyId,
     },
-
     select: {
       id: true,
       name: true,
       email: true,
       phone: true,
-      resumePublicUrl: true,
-      candidateStatus: true,
 
-      AIEvaluation: {
+      // candidateStatus no longer lives on Candidate — see note below
+      applications: {
         select: {
-          aiScore: true,
+          resumePublicUrl: true,
+          candidateStatus: true,
+          aiEvaluation: {
+            select: { aiScore: true },
+          },
         },
+        orderBy: { createdAt: "desc" },
+        // take: 1, // most recent application only
       },
     },
-
     orderBy: {
       createdAt: "desc",
     },
   });
 
-  return candidates.map((candidate) => ({
-    id: candidate.id,
-    name: candidate.name,
-    email: candidate.email,
-    phone: candidate.phone,
-    resume: candidate.resumePublicUrl,
-    aiScore: candidate.AIEvaluation?.aiScore ?? 0,
-    status: candidate.candidateStatus,
-  }));
+  return candidates.map((candidate) => {
+    const latestApplication = candidate.applications[0];
+
+    return {
+      id: candidate.id,
+      name: candidate.name,
+      email: candidate.email,
+      phone: candidate.phone,
+      resume: latestApplication.resumePublicUrl,
+      aiScore: latestApplication?.aiEvaluation?.aiScore ?? null,
+      status: latestApplication?.candidateStatus ?? "UNEVALUATED",
+    };
+  });
 }

@@ -76,18 +76,24 @@ model VerificationToken {
 
 // this is company/saas Tencancy 
 model Company {
-  id           String        @id @default(cuid())
-  companyName  String //name of the company 
-  email        String        @unique // email of the company
-  address      String? // address of the company
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  users        User[]
-  widgets      Widget[]
-  candidates   Candidate[]
-  interviews   Interview[]
-  applications Application[]
-  jobs         Job[]
+  id          String   @id @default(cuid())
+  companyName String //name of the company 
+  email       String   @unique // email of the company
+  address     String? // address of the company
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // ---NEW :Settings-Page fields ---
+  applicationCooldownDays Int           @default(30)
+  rejectionThreshold      Int           @default(40)
+  recommendedThreshold    Int           @default(75)
+  aiDefaultPrompt         String?
+  users                   User[]
+  widgets                 Widget[]
+  candidates              Candidate[]
+  interviews              Interview[]
+  applications            Application[]
+  jobs                    Job[]
 }
 
 model Widget {
@@ -237,14 +243,16 @@ model Interview {
 }
 
 model Job {
-  id          String   @id @default(cuid())
-  companyId   String
-  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  title       String
-  description String
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id               String   @id @default(cuid())
+  companyId        String
+  company          Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  title            String
+  description      String
+  isActive         Boolean  @default(true)
+  // ── NEW ──
+  evaluationPrompt String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   applications Application[]
 

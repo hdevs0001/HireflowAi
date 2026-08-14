@@ -4,7 +4,6 @@ import { DashboardStats } from "@/components/dashboard/dashboardstats";
 import { prisma } from "@/prisma";
 import { getCurrentUser } from "@/utils/getCurrentUser";
 
-
 export async function getDashboardStats(): Promise<DashboardStats> {
   const user = await getCurrentUser();
 
@@ -28,48 +27,31 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     averageAIScore,
   ] = await Promise.all([
     prisma.candidate.count({
-      where: {
-        companyId,
-      },
+      where: { companyId },
     }),
 
     prisma.interview.count({
       where: {
         companyId,
-        interviewTime: {
-          gte: startOfToday,
-          lte: endOfToday,
-        },
+        interviewTime: { gte: startOfToday, lte: endOfToday },
       },
     }),
 
     prisma.user.count({
-      where: {
-        companyId,
-        role: "HR",
-        hrStatus: "ENABLE",
-      },
+      where: { companyId, role: "HR", hrStatus: "ENABLE" },
     }),
 
     prisma.candidate.count({
-      where: {
-        companyId,
-        createdAt: {
-          gte: startOfToday,
-          lte: endOfToday,
-        },
-      },
+      where: { companyId, createdAt: { gte: startOfToday, lte: endOfToday } },
     }),
 
     prisma.aIEvaluation.aggregate({
       where: {
-        candidate: {
+        application: {   // ← fixed: filter through Application, not Candidate
           companyId,
         },
       },
-      _avg: {
-        aiScore: true,
-      },
+      _avg: { aiScore: true },
     }),
   ]);
 
@@ -78,9 +60,9 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     interviewsToday,
     activeHR,
     resumesUploadedToday,
-   averageAIScore:
-  averageAIScore._avg.aiScore === null
-    ? null
-    : Math.round(averageAIScore._avg.aiScore),
+    averageAIScore:
+      averageAIScore._avg.aiScore === null
+        ? null
+        : Math.round(averageAIScore._avg.aiScore),
   };
 }

@@ -3,7 +3,16 @@ import { getDashboardStats } from "@/action/dashboard";
 
 export default async function DashboardPage() {
   const stats = await getDashboardStats();
-
+  if (!stats) {
+    return (
+      <div style={{ padding: 24 }}>
+        <p>
+          Your account isn't yet associated with a company. Please contact your
+          administrator.
+        </p>
+      </div>
+    );
+  }
   return (
     <main className="space-y-8 p-4">
       <div>

@@ -1,8 +1,8 @@
 import crypto from "crypto";
 import { redis } from "./redis/redis";
 
-const SESSION_TTL_SECONDS = 60 * 40;
-const BRIDGE_TOKEN_TTL_SECONDS = 60 * 40;
+const SESSION_TTL_SECONDS = 60 * 15        // 15 minutes — covers browsing + Google OAuth comfortably
+const BRIDGE_TOKEN_TTL_SECONDS = 60 * 10   // 10 minutes — covers filling the form + picking a resume file
 
 export interface CandidateSessionData {
   widgetId: string;

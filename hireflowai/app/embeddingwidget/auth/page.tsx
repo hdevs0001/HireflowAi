@@ -1,111 +1,126 @@
-"use client";
+// app/embeddingwidget/auth/page.tsx
+"use client"
 
-import { signIn, useSession } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 
-export default function AuthPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+const HIREFLOW_ORIGIN = process.env.NEXT_PUBLIC_HIREFLOW_ORIGIN!
 
-  const widgetId = searchParams.get("widgetId");
+export default function EmbeddedAuthPage() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const widgetId = searchParams.get("widgetId")
+  const jobId = searchParams.get("jobId")
+  const parentOrigin = searchParams.get("parentOrigin")
 
-  const { data: session, status } = useSession();
+  const [sessionId, setSessionId] = useState<string | null>(null)
+  const [candidateEmail, setCandidateEmail] = useState<string | null>(null)
+  const [bridgeToken, setBridgeToken] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
-  if (status === "loading") {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p>Checking authentication...</p>
-      </div>
-    );
+  // 1. Create the pre-auth session as soon as this page loads
+  useEffect(() => {
+    if (!widgetId || !jobId || !parentOrigin) {
+      setError("Missing session information.")
+      return
+    }
+
+    async function startSession() {
+      const res = await fetch(`${HIREFLOW_ORIGIN}/api/widget/session`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ widgetId, jobId, parentOrigin }),
+      })
+      const data = await res.json()
+      if (!res.ok || !data.success) {
+        setError(data.message ?? "Could not start session.")
+        return
+      }
+      setSessionId(data.sessionId)
+    }
+
+    startSession()
+  }, [widgetId, jobId, parentOrigin])
+
+  // 2. Listen for the popup's postMessage reply
+  useEffect(() => {
+    function handleMessage(event: MessageEvent) {
+      if (event.origin !== HIREFLOW_ORIGIN) return
+      if (event.data?.type !== "HIREFLOW_AUTH_SUCCESS") return
+      if (event.data.widgetId !== widgetId) return
+
+      setBridgeToken(event.data.bridgeToken)
+      setCandidateEmail(event.data.candidateEmail)
+    }
+
+    window.addEventListener("message", handleMessage)
+    return () => window.removeEventListener("message", handleMessage)
+  }, [widgetId])
+
+  function continueWithGoogle() {
+    if (!sessionId || !widgetId) return
+    window.open(
+      `${HIREFLOW_ORIGIN}/candidate-auth?widgetId=${encodeURIComponent(widgetId)}&sessionId=${encodeURIComponent(sessionId)}`,
+      "hireflow-auth",
+      "popup,width=480,height=640"
+    )
   }
 
-  /*
-   * User is already authenticated.
-   */
-  if (session?.user?.email) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="w-full max-w-md space-y-6 rounded-xl border p-8">
-          <div>
-            <h1 className="text-2xl font-bold">
-              You're signed in
-            </h1>
+  function continueToForm() {
+    if (!bridgeToken || !widgetId || !parentOrigin) return
+    router.push(
+      `/embeddingwidget/form?widgetId=${encodeURIComponent(widgetId)}&bridgeToken=${encodeURIComponent(bridgeToken)}&parentOrigin=${encodeURIComponent(parentOrigin)}`
+    )
+  }
 
-            <p className="mt-2 text-gray-500">
-              Signed in as
-            </p>
+  if (error) return <p style={{ padding: 24, fontFamily: "system-ui", color: "#dc2626" }}>{error}</p>
 
-            <p className="font-medium">
-              {session.user.email}
-            </p>
-          </div>
-
+  return (
+    <div style={{ padding: 24, fontFamily: "system-ui", maxWidth: 400, margin: "0 auto" }}>
+      {!candidateEmail ? (
+        <>
+          <h1 style={{ fontSize: 20, fontWeight: 700 }}>Sign in to continue</h1>
+          <p style={{ color: "#6b7280", marginBottom: 16 }}>
+            Sign in with Google to continue your application.
+          </p>
           <button
             type="button"
-            onClick={() => {
-              if (!widgetId) {
-                console.error(
-                  "widgetId is missing"
-                );
-                return;
-              }
-
-              router.push(
-                `/embeddingwidget/form?widgetId=${encodeURIComponent(
-                  widgetId
-                )}`
-              );
+            onClick={continueWithGoogle}
+            disabled={!sessionId}
+            style={{
+              width: "100%",
+              padding: "12px",
+              borderRadius: 8,
+              border: "1px solid #e5e7eb",
+              background: "#fff",
+              cursor: sessionId ? "pointer" : "not-allowed",
             }}
-            className="w-full rounded-lg bg-black px-4 py-3 text-white"
+          >
+            Continue with Google
+          </button>
+        </>
+      ) : (
+        <>
+          <h1 style={{ fontSize: 20, fontWeight: 700 }}>You're signed in</h1>
+          <p style={{ color: "#6b7280" }}>Signed in as</p>
+          <p style={{ fontWeight: 600 }}>{candidateEmail}</p>
+          <button
+            type="button"
+            onClick={continueToForm}
+            style={{
+              width: "100%",
+              padding: "12px",
+              borderRadius: 8,
+              border: "none",
+              background: "#000",
+              color: "#fff",
+              cursor: "pointer",
+            }}
           >
             Continue to application
           </button>
-        </div>
-      </div>
-    );
-  }
-
-  /*
-   * User isn't authenticated.
-   */
-  return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="w-full max-w-md space-y-6 rounded-xl border p-8">
-        <div>
-          <h1 className="text-2xl font-bold">
-            Sign in to continue
-          </h1>
-
-          <p className="mt-2 text-gray-500">
-            Sign in with Google to continue your
-            application.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => {
-            if (!widgetId) {
-              console.error(
-                "widgetId is missing"
-              );
-              return;
-            }
-
-            signIn("google", {
-              callbackUrl:
-                `/embeddingwidget/auth?widgetId=${encodeURIComponent(
-                  widgetId
-                )}`,
-            });
-          }}
-          className="flex w-full items-center justify-center gap-3 rounded-lg border px-4 py-3 hover:bg-gray-50"
-        >
-          <span className="font-medium">
-            Continue with Google
-          </span>
-        </button>
-      </div>
+        </>
+      )}
     </div>
-  );
+  )
 }

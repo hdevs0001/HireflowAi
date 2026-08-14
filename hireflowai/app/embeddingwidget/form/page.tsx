@@ -1,224 +1,104 @@
-"use client";
+// app/embeddingwidget/form/page.tsx
+"use client"
 
-import { FormEvent, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState } from "react"
+import { useSearchParams } from "next/navigation"
 
-const MAX_SIZE_MB = 1;
+const HIREFLOW_ORIGIN = process.env.NEXT_PUBLIC_HIREFLOW_ORIGIN!
 
-interface WidgetApiResponse {
-  success: boolean;
-  message: string;
-}
+export default function EmbeddedFormPage() {
+  const searchParams = useSearchParams()
+  const widgetId = searchParams.get("widgetId")
+  const bridgeToken = searchParams.get("bridgeToken")
+  const parentOrigin = searchParams.get("parentOrigin")
 
-export default function WidgetForm() {
-  const searchParams = useSearchParams();
+  const [submitting, setSubmitting] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const widgetId = searchParams.get("widgetId");
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setError(null)
 
-  const [loading, setLoading] = useState(false);
-
-  function validateResume(file: File | null): string | null {
-    if (!file) {
-      return "Please attach the resume";
+    if (!bridgeToken || !parentOrigin) {
+      setError("Missing authentication. Please restart the application.")
+      return
     }
 
-    const isPdfMime = file.type === "application/pdf";
+    setSubmitting(true)
+    const formData = new FormData(e.currentTarget)
+    formData.append("parentOrigin", parentOrigin)
 
-    const isPdfExtension = file.name.toLowerCase().endsWith(".pdf");
-
-    if (!isPdfMime || !isPdfExtension) {
-      return "Resume must be a PDF file";
-    }
-
-    const sizeMB = file.size / (1024 * 1024);
-
-    if (sizeMB > MAX_SIZE_MB) {
-      return `File must be under ${MAX_SIZE_MB}MB.`;
-    }
-
-    return null;
-  }
-
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-
-    if (!widgetId) {
-      alert("Invalid widget");
-      return;
-    }
-
-    const formData = new FormData(e.currentTarget);
-
-    const resume = formData.get("resumeFile") as File | null;
-
-    const error = validateResume(resume);
-
-    if (error) {
-      alert(error);
-      return;
-    }
-    const parentOrigin = document.referrer
-      ? new URL(document.referrer).origin
-      : null;
-    formData.append("widgetId", widgetId);
-    formData.append("porigin", parentOrigin ?? "");
     try {
-      setLoading(true);
-
-      const res = await fetch("/api/widget", {
+      const res = await fetch(`${HIREFLOW_ORIGIN}/api/widget`, {
         method: "POST",
+        headers: { Authorization: `Bearer ${bridgeToken}` },
         body: formData,
-      });
+      })
 
-      const data: WidgetApiResponse = await res.json();
+      const data = await res.json()
 
-      if (!res.ok) {
-        alert(data.message);
-        return;
+      if (!res.ok || !data.success) {
+        setError(data.message ?? "Submission failed. Please try again.")
+        return
       }
 
-      alert(data.message);
-
-      // Tell parent website
-      window.parent.postMessage(
-        {
-          type: "HIRE_FLOW_SUBMITTED",
-        },
-        "*",
-      );
-    } catch (error) {
-      console.error(error);
-
-      alert("Something went wrong. Please try again.");
+      setSubmitted(true)
+      window.parent.postMessage({ type: "HIRE_FLOW_SUBMITTED", widgetId }, "*")
+    } catch {
+      setError("Something went wrong. Please try again.")
     } finally {
-      setLoading(false);
+      setSubmitting(false)
     }
   }
 
-  function closeWidget() {
-    window.parent.postMessage(
-      {
-        type: "HIRE_FLOW_CLOSE",
-      },
-      "*",
-    );
+  if (submitted) {
+    return <p style={{ padding: 24, fontFamily: "system-ui" }}>Application submitted. Thank you!</p>
   }
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        padding: "20px",
-        background: "#fff",
-        boxSizing: "border-box",
-      }}
-    >
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          width: "100%",
-          maxWidth: "420px",
-          margin: "0 auto",
-          padding: "20px",
-          boxSizing: "border-box",
-        }}
-      >
-        <button
-          type="button"
-          onClick={closeWidget}
-          style={{
-            float: "right",
-            border: "none",
-            background: "transparent",
-            fontSize: "20px",
-            cursor: "pointer",
-          }}
-        >
-          ✕
-        </button>
+    <div style={{ padding: 24, fontFamily: "system-ui", maxWidth: 400, margin: "0 auto" }}>
+      <h1 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16 }}>Application Details</h1>
 
-        <h2
-          style={{
-            marginTop: 0,
-            marginBottom: "20px",
-            color: "black",
-          }}
-        >
-          Apply
-        </h2>
-
+      <form onSubmit={handleSubmit}>
         <input
           name="fullName"
           placeholder="Full Name"
           required
-          style={{
-            width: "100%",
-            padding: "12px",
-            marginBottom: "12px",
-            border: "1px solid #ddd",
-            borderRadius: "6px",
-            boxSizing: "border-box",
-          }}
+          style={{ display: "block", width: "100%", padding: 10, marginBottom: 12, border: "1px solid #e5e7eb", borderRadius: 6, boxSizing: "border-box" }}
         />
-
-        <input
-          name="email"
-          type="email"
-          required
-          placeholder="Email"
-          style={{
-            width: "100%",
-            padding: "12px",
-            marginBottom: "12px",
-            border: "1px solid #ddd",
-            borderRadius: "6px",
-            boxSizing: "border-box",
-          }}
-        />
-
         <input
           name="phoneNumber"
-          required
           placeholder="Phone Number"
-          style={{
-            width: "100%",
-            padding: "12px",
-            marginBottom: "12px",
-            border: "1px solid #ddd",
-            borderRadius: "6px",
-            boxSizing: "border-box",
-          }}
+          required
+          style={{ display: "block", width: "100%", padding: 10, marginBottom: 12, border: "1px solid #e5e7eb", borderRadius: 6, boxSizing: "border-box" }}
         />
-
         <input
           name="resumeFile"
-          required
           type="file"
           accept="application/pdf,.pdf"
-          style={{
-            width: "100%",
-            marginBottom: "20px",
-            color: "black",
-          }}
+          required
+          style={{ display: "block", width: "100%", marginBottom: 16 }}
         />
+
+        {error && <p style={{ color: "#dc2626", marginBottom: 12 }}>{error}</p>}
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={submitting}
           style={{
             width: "100%",
             padding: "12px",
-            background: "#2563eb",
-            color: "#fff",
+            borderRadius: 8,
             border: "none",
-            borderRadius: "6px",
-            cursor: loading ? "not-allowed" : "pointer",
-            fontSize: "15px",
+            background: "#000",
+            color: "#fff",
+            cursor: submitting ? "not-allowed" : "pointer",
           }}
         >
-          {loading ? "Submitting..." : "Submit"}
+          {submitting ? "Submitting…" : "Submit Application"}
         </button>
       </form>
     </div>
-  );
+  )
 }

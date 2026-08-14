@@ -1,247 +1,3 @@
-// "use client";
-// import { useEffect, useState, useRef } from "react";
-// import Script from "next/script";
-// interface WidgetApiResponse {
-//   success: boolean;
-//   message: string;
-// }
-
-// export default function App() {
-//   const [open, setOpen] = useState(false);
-//   const turnstileRef = useRef<HTMLDivElement>(null);
-//   const MAX_SIZE_MB = 1;
-//   // const [turnstileReady, setTurnstileReady] = useState(false);
-//   const widgetIdRef = useRef<string | null>(null);
-
-//   // const [turnstileToken, setTurnstileToken] = useState("");
-//   // useEffect(() => {
-//   //   if (!open || !turnstileReady) return;
-//   //   if (!turnstileRef.current) return;
-
-//   //   // Don't render twice
-//   //   if (widgetIdRef.current) return;
-
-//   //   widgetIdRef.current = window.turnstile.render(turnstileRef.current, {
-//   //     sitekey: "0x4AAAAAAD-5OqClLGgJyKAi",
-
-//   //     callback(token: string) {
-//   //       setTurnstileToken(token);
-//   //     },
-//   //   });
-//   // }, [open, turnstileReady]);
-//   useEffect(() => {
-//     if (open) return;
-
-//     if (widgetIdRef.current) {
-//       window.turnstile.remove(widgetIdRef.current);
-//       widgetIdRef.current = null;
-//       // setTurnstileToken("");
-//     }
-//   }, [open]);
-
-//   function ValidateResume(file: File | null): string | null {
-//     if (!file) return "Please attach the resume";
-//     const isPdfMime = file.type === "application/pdf";
-//     const isPdfExtension = file.name.toLowerCase().endsWith(".pdf");
-
-//     if (!isPdfMime || !isPdfExtension) {
-//       return "Resume must be a PDF file";
-//     }
-//     const sizeMB = file.size / (1024 * 1024);
-//     if (sizeMB > MAX_SIZE_MB) {
-//       return `File must be under ${MAX_SIZE_MB}MB.`;
-//     }
-//     return null;
-//   }
-
-//   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-//     e.preventDefault();
-//     const formData = new FormData(e.currentTarget);
-//     const resume = formData.get("resumeFile") as File | null;
-//     const error = ValidateResume(resume);
-//     if (error) {
-//       alert(error);
-//       return;
-//     }
-//     // if (!turnstileToken) {
-//     //   alert("Please complete the Turnstile verification.");
-//     //   return;
-//     // }
-//     const script = document.querySelector<HTMLScriptElement>(
-//       'script[src="http://localhost:3000/widget.js"]',
-//     );
-
-//     const widgetId: string | undefined = script?.dataset.widgetId;
-
-//     if (!widgetId) {
-//       alert("Wrong WidgetID");
-//       return;
-//     }
-//     formData.append("widgetId", widgetId);
-//     // formData.append("turnstileToken", turnstileToken);
-//     const res = await fetch("http://localhost:3000/api/widget", {
-//       method: "POST",
-//       body: formData,
-//     });
-
-//     const data: WidgetApiResponse = await res.json();
-
-//     if (!res.ok) {
-//       alert(data.message);
-//       setOpen(false);
-//       return;
-//     }
-
-//     alert(data.message);
-//     setOpen(false);
-//   }
-
-//   return (
-//     <>
-//       <Script
-//         src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
-//         strategy="afterInteractive"
-//       />
-
-//       <button
-//         onClick={() => setOpen(true)}
-//         style={{
-//           background: "#2563eb",
-//           color: "#fff",
-//           border: "none",
-//           padding: "14px 22px",
-//           borderRadius: "8px",
-//           cursor: "pointer",
-//           fontSize: "16px",
-//         }}
-//       >
-//         Apply Now
-//       </button>
-//       {open && (
-//         <div
-//           style={{
-//             position: "fixed",
-//             inset: 0,
-//             background: "rgba(0,0,0,0.5)",
-//             display: "flex",
-//             justifyContent: "center",
-//             alignItems: "center",
-//             zIndex: 9999,
-//           }}
-//         >
-//           <form
-//             onSubmit={handleSubmit}
-//             style={{
-//               width: "420px",
-//               background: "#fff",
-//               padding: "20px",
-//               borderRadius: "12px",
-//               boxShadow: "0 10px 25px rgba(0,0,0,.2)",
-//               position: "relative",
-//             }}
-//           >
-//             <button
-//               type="button"
-//               onClick={() => setOpen(false)}
-//               style={{
-//                 position: "absolute",
-//                 right: "15px",
-//                 top: "15px",
-//                 border: "none",
-//                 background: "transparent",
-//                 fontSize: "20px",
-//                 cursor: "pointer",
-//               }}
-//             >
-//               ✕
-//             </button>
-
-//             <h2
-//               style={{
-//                 marginTop: 0,
-//                 marginBottom: "20px",
-//                 color: "black",
-//               }}
-//             >
-//               Apply
-//             </h2>
-
-//             <input
-//               name="fullName"
-//               placeholder="Full Name"
-//               required
-//               style={{
-//                 width: "100%",
-//                 padding: "12px",
-//                 marginBottom: "12px",
-//                 border: "1px solid #ddd",
-//                 borderRadius: "6px",
-//                 boxSizing: "border-box",
-//               }}
-//             />
-
-//             <input
-//               name="email"
-//               type="email"
-//               required
-//               placeholder="Email"
-//               style={{
-//                 width: "100%",
-//                 padding: "12px",
-//                 marginBottom: "12px",
-//                 border: "1px solid #ddd",
-//                 borderRadius: "6px",
-//                 boxSizing: "border-box",
-//               }}
-//             />
-//             <input
-//               name="phoneNumber"
-//               required
-//               placeholder="Phone Number"
-//               style={{
-//                 width: "100%",
-//                 padding: "12px",
-//                 marginBottom: "12px",
-//                 border: "1px solid #ddd",
-//                 borderRadius: "6px",
-//                 boxSizing: "border-box",
-//               }}
-//             />
-
-//             <input
-//               name="resumeFile"
-//               required
-//               type="file"
-//               accept="application/pdf,.pdf"
-//               style={{
-//                 width: "100%",
-//                 marginBottom: "20px",
-//                 color: "black",
-//               }}
-//             />
-//             <div ref={turnstileRef}></div>
-//             <button
-//               type="submit"
-//               style={{
-//                 width: "100%",
-//                 padding: "12px",
-//                 background: "#2563eb",
-//                 color: "#fff",
-//                 border: "none",
-//                 borderRadius: "6px",
-//                 cursor: "pointer",
-//                 fontSize: "15px",
-//               }}
-//             >
-//               Submit
-//             </button>
-//           </form>
-//         </div>
-//       )}
-//     </>
-//   );
-// }
-
 import { useEffect, useState } from "react";
 
 const HIRE_FLOW_URL = "http://localhost:3000";
@@ -252,6 +8,7 @@ interface AppProps {
 
 export default function App({ widgetId }: AppProps) {
   const [open, setOpen] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     function handleMessage(event: MessageEvent) {
@@ -265,7 +22,7 @@ export default function App({ widgetId }: AppProps) {
       }
 
       if (event.data?.type === "HIRE_FLOW_SUBMITTED") {
-        setOpen(false);
+        setSubmitted(true);
       }
     }
 
@@ -275,11 +32,13 @@ export default function App({ widgetId }: AppProps) {
       window.removeEventListener("message", handleMessage);
     };
   }, []);
+  function closeModal() {
+    setOpen(false);
+    setSubmitted(false); // reset for next time the candidate opens it again
+  }
 
   return (
     <>
-      {/* Apply button */}
-
       <button
         type="button"
         onClick={() => setOpen(true)}
@@ -296,8 +55,6 @@ export default function App({ widgetId }: AppProps) {
         Apply Now
       </button>
 
-      {/* Iframe */}
-
       {open && (
         <div
           style={{
@@ -310,21 +67,112 @@ export default function App({ widgetId }: AppProps) {
             zIndex: 999999,
           }}
         >
-          <iframe
-            title="HireflowAI Application Form"
-            src={`${HIRE_FLOW_URL}/embeddingwidget/auth?widgetId=${encodeURIComponent(
-              widgetId,
-            )}`}
-            allow="identity-credentials-get"
+          <div
             style={{
               width: "500px",
               height: "650px",
-              border: "none",
               borderRadius: "12px",
               background: "#fff",
               boxShadow: "0 20px 50px rgba(0,0,0,0.25)",
+              overflow: "hidden",
+              position: "relative",
             }}
-          />
+          >
+            {submitted ? (
+              // ── Success screen — rendered by App.tsx itself, on the company's page ──
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: 32,
+                  fontFamily: "system-ui",
+                  textAlign: "center",
+                }}
+              >
+                <div
+                  style={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: "50%",
+                    background: "#dcfce7",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginBottom: 20,
+                    animation: "hireflow-pop 0.4s ease-out",
+                  }}
+                >
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M5 13l4 4L19 7"
+                      stroke="#16a34a"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+
+                <h2 style={{ fontSize: 20, fontWeight: 700, margin: 0, marginBottom: 8 }}>
+                  Application Submitted
+                </h2>
+                <p style={{ color: "#6b7280", margin: 0, maxWidth: 280, marginBottom: 24 }}>
+                  Thanks for applying — the team will review your application and reach out if there's a match.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  style={{
+                    padding: "10px 24px",
+                    borderRadius: 8,
+                    border: "none",
+                    background: "#000",
+                    color: "#fff",
+                    cursor: "pointer",
+                  }}
+                >
+                  Close
+                </button>
+
+                <style>{`
+                  @keyframes hireflow-pop {
+                    0% { transform: scale(0); opacity: 0; }
+                    70% { transform: scale(1.1); }
+                    100% { transform: scale(1); opacity: 1; }
+                  }
+                `}</style>
+              </div>
+            ) : (
+              <iframe
+                title="HireflowAI Application Form"
+                src={`${HIRE_FLOW_URL}/embeddingwidget/jobs?widgetId=${encodeURIComponent(widgetId)}&parentOrigin=${encodeURIComponent(window.location.origin)}`}
+                style={{ width: "100%", height: "100%", border: "none" }}
+              />
+            )}
+
+            {submitted && (
+              <button
+                type="button"
+                onClick={closeModal}
+                style={{
+                  position: "absolute",
+                  top: 12,
+                  right: 12,
+                  border: "none",
+                  background: "transparent",
+                  fontSize: 20,
+                  cursor: "pointer",
+                }}
+              >
+                ×
+              </button>
+            )}
+          </div>
         </div>
       )}
     </>

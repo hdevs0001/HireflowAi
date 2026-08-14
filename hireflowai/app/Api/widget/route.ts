@@ -181,6 +181,29 @@ export async function POST(req: NextRequest) {
       throw new ApiError(403, "Invalid widget origin");
     }
 
+    const COOLDOWN_DAYS = 30;
+    const recentApplication = await prisma.application.findFirst({
+      where: { candidateId, jobId },
+      orderBy: { createdAt: "desc" },
+      select: { createdAt: true },
+    });
+
+    if (recentApplication) {
+      const daysSinceLastApplication =
+        (Date.now() - recentApplication.createdAt.getTime()) /
+        (1000 * 60 * 60 * 24);
+
+      if (daysSinceLastApplication < COOLDOWN_DAYS) {
+        const daysRemaining = Math.ceil(
+          COOLDOWN_DAYS - daysSinceLastApplication,
+        );
+        throw new ApiError(
+          409,
+          `You already applied to this job. You can reapply in ${daysRemaining} day(s).`,
+        );
+      }
+    }
+
     const verifiedResume = resumeValidation(parsed.resumeFile);
     const upload = await uploadResume(verifiedResume);
 
