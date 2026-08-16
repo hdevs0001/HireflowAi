@@ -1,15 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { STATUS_LABELS } from "@/lib/utils/status-machine";
+import { CandidateStatusEnum } from "@prisma/client";
 
-const stages = [
-  ["Applied", 90],
-  ["Screening", 70],
-  ["Interview", 45],
-  ["Technical", 32],
-  ["Offer", 18],
-];
+interface Props {
+  funnel: { stage: CandidateStatusEnum; count: number; percent: number }[];
+}
 
-export default function HiringPipeline() {
+export default function HiringPipeline({ funnel }: Props) {
   return (
     <Card>
       <CardHeader>
@@ -17,14 +15,13 @@ export default function HiringPipeline() {
       </CardHeader>
 
       <CardContent className="space-y-5">
-        {stages.map(([name, value]) => (
-          <div key={name}>
+        {funnel.map((stage) => (
+          <div key={stage.stage}>
             <div className="mb-2 flex justify-between">
-              <span>{name}</span>
-              <span>{value}%</span>
+              <span>{STATUS_LABELS[stage.stage]}</span>
+              <span>{stage.count} ({stage.percent}%)</span>
             </div>
-
-            <Progress value={Number(value)} />
+            <Progress value={stage.percent} />
           </div>
         ))}
       </CardContent>

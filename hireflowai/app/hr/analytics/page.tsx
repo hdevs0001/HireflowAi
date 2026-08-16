@@ -1,27 +1,30 @@
+import { getAnalyticsCards, getAnalyticsSummary, getHiringTrend } from "@/lib/queries/analytics";
+import { auth } from "@/auth";
 import AnalyticsCards from "@/components/hr/analytics/analytics-cards";
 import AnalyticsChart from "@/components/hr/analytics/analytics-chart";
 import AnalyticsSummary from "@/components/hr/analytics/analytics-summary";
 
-export default function AnalyticsPage() {
+export default async function AnalyticsPage() {
+  const session = await auth();
+  const companyId = session?.user?.companyId;
+  if (!companyId) return <div>Unauthorized</div>;
+
+  const [cards, summary, trend] = await Promise.all([
+    getAnalyticsCards(companyId),
+    getAnalyticsSummary(companyId),
+    getHiringTrend(companyId),
+  ]);
+
   return (
-    <main className="space-y-6 p-6">
-      <div>
-        <h1 className="text-3xl font-bold">Analytics</h1>
+    <div className="space-y-6 p-4">
+      <AnalyticsCards data={cards} />
 
-        <p className="text-muted-foreground">
-          Recruitment analytics and hiring performance.
-        </p>
-      </div>
-
-      <AnalyticsCards />
-
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-5 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <AnalyticsChart />
+          <AnalyticsChart data={trend} />
         </div>
-
-        <AnalyticsSummary />
+        <AnalyticsSummary summary={summary} />
       </div>
-    </main>
+    </div>
   );
 }

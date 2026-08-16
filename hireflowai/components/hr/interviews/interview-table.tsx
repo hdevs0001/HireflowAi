@@ -5,7 +5,6 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
 import {
   Table,
   TableBody,
@@ -14,22 +13,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
 import { columns } from "./interview-columns";
-import { Interview } from "./types";
+import { InterviewRow } from "@/lib/queries/interviews";
 
 interface Props {
-  data: Interview[];
+  data: InterviewRow[];
 }
 
-export default function InterviewTable({
-  data,
-}: Props) {
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
+export default function InterviewTable({ data }: Props) {
+  const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
 
   return (
     <div className="rounded-xl border">
@@ -39,29 +31,30 @@ export default function InterviewTable({
             <TableRow key={group.id}>
               {group.headers.map((header) => (
                 <TableHead key={header.id}>
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
+                  {flexRender(header.column.columnDef.header, header.getContext())}
                 </TableHead>
               ))}
             </TableRow>
           ))}
         </TableHeader>
-
         <TableBody>
-          {table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id}>
-                  {flexRender(
-                    cell.column.columnDef.cell,
-                    cell.getContext()
-                  )}
-                </TableCell>
-              ))}
+          {table.getRowModel().rows.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="text-center text-muted-foreground py-8">
+                No interviews found.
+              </TableCell>
             </TableRow>
-          ))}
+          ) : (
+            table.getRowModel().rows.map((row) => (
+              <TableRow key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
     </div>

@@ -1,59 +1,47 @@
+import {
+  getInterviews,
+  getInterviewViewCounts,
+  InterviewView,
+} from "@/lib/queries/interviews";
+import { auth } from "@/auth";
 import InterviewTable from "@/components/hr/interviews/interview-table";
 import InterviewToolbar from "@/components/hr/interviews/interview-toolbar";
+import PaginationControls from "@/components/shared/pagination-controls";
 
-import { Interview } from "@/components/hr/interviews/types";
+interface PageProps {
+  searchParams: Promise<{ view?: string; search?: string; page?: string }>;
+}
 
-const interviews: Interview[] = [
-  {
-    id: "1",
-    name: "Rahul Sharma",
-    email: "rahul@gmail.com",
-    interviewTime: "15 Jul 2026 • 10:00 AM",
-    interviewLink: "https://meet.google.com/abc-defg-hij",
-    resumeLink:
-      "https://res.cloudinary.com/demo/raw/upload/sample.pdf",
-    status: "Scheduled",
-  },
+export default async function InterviewPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const session = await auth();
+  const companyId = session?.user?.companyId;
+  if (!companyId) return <div>Unauthorized</div>;
 
-  {
-    id: "2",
-    name: "John Doe",
-    email: "john@gmail.com",
-    interviewTime: "15 Jul 2026 • 1:00 PM",
-    interviewLink: "https://meet.google.com/xyz-abcd-efg",
-    resumeLink:
-      "https://res.cloudinary.com/demo/raw/upload/sample.pdf",
-    status: "In Progress",
-  },
+  const [{ rows, total, page, totalPages, pageSize }, counts] =
+    await Promise.all([
+      getInterviews({
+        companyId,
+        view: params.view as InterviewView | undefined,
+        search: params.search,
+        page: params.page ? parseInt(params.page) : 1,
+      }),
+      getInterviewViewCounts(companyId),
+    ]);
 
-  {
-    id: "3",
-    name: "Emily Watson",
-    email: "emily@gmail.com",
-    interviewTime: "16 Jul 2026 • 11:30 AM",
-    interviewLink: "https://meet.google.com/qwe-rtyu-iop",
-    resumeLink:
-      "https://res.cloudinary.com/demo/raw/upload/sample.pdf",
-    status: "Completed",
-  },
-];
-
-export default function InterviewsPage() {
   return (
-    <div className="space-y-6 p-6">
-      <div>
-        <h1 className="text-3xl font-bold">
-          Interviews
-        </h1>
-
-        <p className="text-muted-foreground">
-          Manage all scheduled interviews.
-        </p>
-      </div>
-
-      <InterviewToolbar />
-
-      <InterviewTable data={interviews} />
+    <div className="space-y-4 p-4">
+      <InterviewToolbar counts={counts} />
+      <InterviewTable data={rows} />
+      <p className="text-sm text-muted-foreground">
+        Showing {rows.length} of {total} interviews
+      </p>
+      <PaginationControls
+        page={page}
+        totalPages={totalPages}
+        total={total}
+        pageSize={pageSize}
+      />
     </div>
   );
 }

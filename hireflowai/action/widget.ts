@@ -3,7 +3,14 @@
 import { prisma } from "@/prisma";
 import { getCurrentUser } from "@/utils/getCurrentUser";
 
-export async function getWidget() {
+async function requireCompanyUser() {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized");
+  if (!user.companyId) throw new Error("User is not associated with a company");
+  return user;
+}
+
+export async function getAllWidgets() {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -14,14 +21,10 @@ export async function getWidget() {
     throw new Error("User is not associated with a company");
   }
 
-  const widget = await prisma.widget.findFirst({
-    where: {
-      companyId: user.companyId,
-    },
-   
+  return prisma.widget.findMany({
+    where: { companyId: user.companyId },
+    orderBy: { createdAt: "desc" },
   });
-
-  return widget;
 }
 export async function createWidget(name: string, allowedDomains: string[]) {
   const user = await getCurrentUser();
@@ -40,16 +43,6 @@ export async function createWidget(name: string, allowedDomains: string[]) {
 
   if (allowedDomains.length === 0) {
     throw new Error("At least one allowed domain is required");
-  }
-
-  const existingWidget = await prisma.widget.findFirst({
-    where: {
-      companyId: user.companyId,
-    },
-  });
-
-  if (existingWidget) {
-    throw new Error("Your company already has a widget.");
   }
 
   return prisma.widget.create({
@@ -84,10 +77,7 @@ export async function addAllowedDomain(widgetId: string, domain: string) {
     throw new Error("Widget not found");
   }
 
-const normalizedDomain = domain
-  .trim()
-  .toLowerCase()
-  .replace(/\/+$/, "");
+  const normalizedDomain = domain.trim().toLowerCase().replace(/\/+$/, "");
 
   if (!normalizedDomain) {
     throw new Error("Invalid domain");
@@ -146,5 +136,21 @@ export async function removeAllowedDomain(widgetId: string, domain: string) {
     data: {
       allowedDomains,
     },
+  });
+}
+
+// action/widget.ts — add this
+export async function updateWidgetName(widgetId: string, name: string) {
+  const admin = await requireCompanyUser(); // however your other widget actions authorize
+  const widget = await prisma.widget.findUnique({
+    where: { id: widgetId },
+    select: { companyId: true },
+  });
+  if (!widget || widget.companyId !== admin.companyId) {
+    throw new Error("Widget not found");
+  }
+  return prisma.widget.update({
+    where: { id: widgetId },
+    data: { widgetName: name.trim() || null },
   });
 }

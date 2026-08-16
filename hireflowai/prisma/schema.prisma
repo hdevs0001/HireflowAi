@@ -84,9 +84,9 @@ model Company {
   updatedAt   DateTime @updatedAt
 
   // ---NEW :Settings-Page fields ---
-  applicationCooldownDays Int           @default(30)
-  rejectionThreshold      Int           @default(40)
-  recommendedThreshold    Int           @default(75)
+  applicationCooldownDays Int             @default(30)
+  rejectionThreshold      Int             @default(40)
+  recommendedThreshold    Int             @default(75)
   aiDefaultPrompt         String?
   users                   User[]
   widgets                 Widget[]
@@ -94,6 +94,7 @@ model Company {
   interviews              Interview[]
   applications            Application[]
   jobs                    Job[]
+  statusHistories         StatusHistory[]
 }
 
 model Widget {
@@ -111,8 +112,23 @@ model Widget {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   applications   Application[]
+  jobs           WidgetJob[] // NEW
 
   @@index([companyId])
+}
+
+// NEW join model
+model WidgetJob {
+  id        String   @id @default(cuid())
+  widgetId  String
+  widget    Widget   @relation(fields: [widgetId], references: [id], onDelete: Cascade)
+  jobId     String
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([widgetId, jobId]) // prevent duplicate links
+  @@index([jobId])
+  @@index([widgetId])
 }
 
 // this is the candidate model 
@@ -192,17 +208,24 @@ model Application {
   resumeUrl       String?
   resumePublicUrl String?
   candidateStatus CandidateStatusEnum @default(UNEVALUATED)
+  statusUpdatedAt DateTime            @default(now()) // NEW — powers "stuck in stage" detection
+  nextActionHint  String? // NEW — optional cache of computed next action
 
   interviews   Interview[]
   aiEvaluation AIEvaluation?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  statusHistories StatusHistory[]
 
   @@index([companyId])
   @@index([candidateId])
   @@index([widgetId])
   @@index([jobId])
+  @@index([companyId, candidateStatus])
+  @@index([widgetId, candidateStatus])
+  @@index([jobId, candidateStatus])
+  @@index([candidateStatus, statusUpdatedAt])
 }
 
 model AIEvaluation {
@@ -233,13 +256,37 @@ model Interview {
   interviewTime   DateTime? //time for the interview
   //this is the status of the interview
   interViewStatus InterStatusEnum
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  application     Application?    @relation(fields: [applicationId], references: [id])
-  applicationId   String?
+
+  // ── NEW fields ──
+  round           InterviewRound    @default(OTHER)
+  interviewerName String?
+  feedback        String?
+  feedbackScore   Int?
+  outcome         InterviewOutcome?
+
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  application   Application? @relation(fields: [applicationId], references: [id])
+  applicationId String?
 
   @@index([companyId])
   @@index([candidateId])
+  @@index([applicationId])
+  @@index([interviewTime])
+}
+
+model StatusHistory {
+  id            String               @id @default(cuid())
+  applicationId String
+  application   Application          @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  companyId     String
+  company       Company              @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  fromStatus    CandidateStatusEnum?
+  toStatus      CandidateStatusEnum
+  changedAt     DateTime             @default(now())
+
+  @@index([applicationId])
+  @@index([companyId, toStatus, changedAt])
 }
 
 model Job {
@@ -255,6 +302,7 @@ model Job {
   updatedAt        DateTime @updatedAt
 
   applications Application[]
+  widgets      WidgetJob[] // NEW
 
   @@index([companyId])
 }
@@ -291,4 +339,19 @@ enum AIRecommendation {
 enum HrStatus {
   ENABLE
   DISABLE
+}
+
+// ── NEW enums ──
+enum InterviewRound {
+  PHONE_SCREEN
+  TECHNICAL
+  HR_ROUND
+  FINAL
+  OTHER
+}
+
+enum InterviewOutcome {
+  PASS
+  FAIL
+  PENDING
 }

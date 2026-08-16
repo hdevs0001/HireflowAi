@@ -1,115 +1,67 @@
-import CandidateToolbar from "@/components/hr/candidate/candidate-toolbar";
+import { getCandidates } from "@/lib/queries/candidates";
+import { getWidgetsForCompany, getJobsForWidget } from "@/lib/queries/scope";
 import CandidateTable from "@/components/hr/candidate/candidate-table";
+import CandidateToolbar from "@/components/hr/candidate/candidate-toolbar";
+import ScopeSelector from "@/components/shared/scope-selector";
+import { CandidateStatusEnum } from "@prisma/client";
+import { auth } from "@/auth";
+import PaginationControls from "@/components/shared/pagination-controls";
 
-import { Candidate } from "@/components/hr/candidate/types";
+interface PageProps {
+  searchParams: Promise<{
+    widget?: string;
+    job?: string;
+    status?: string;
+    search?: string;
+    sortBy?: string;
+    sortDir?: string;
+    page?: string;
+  }>;
+}
 
-const data: Candidate[] = [
-  {
-    id: "1",
+export default async function CandidatePage({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const session = await auth();
+  const companyId = session?.user?.companyId;
 
-    name: "Rahul Sharma",
+  if (!companyId) return <div>Unauthorized</div>;
 
-    email: "rahul@gmail.com",
+  const [{ rows, total, page, totalPages }, widgets, jobs] = await Promise.all([
+    getCandidates({
+      companyId,
+      widgetId: params.widget,
+      jobId: params.job,
+      status: params.status as CandidateStatusEnum | undefined,
+      search: params.search,
+      sortBy: params.sortBy as
+        | "appliedDate"
+        | "aiScore"
+        | "statusUpdatedAt"
+        | undefined,
+      sortDir: params.sortDir as "asc" | "desc" | undefined,
+      page: params.page ? parseInt(params.page) : 1,
+    }),
+    getWidgetsForCompany(companyId),
+    params.widget
+      ? getJobsForWidget(companyId, params.widget)
+      : Promise.resolve([]),
+  ]);
 
-    phone: "9876543210",
-
-    resume:
-      "https://res.cloudinary.com/demo/raw/upload/sample.pdf",
-
-    aiScore: 96,
-
-    status: "Interviewing",
-  },
-
-  {
-    id: "2",
-
-    name: "John Doe",
-
-    email: "john@gmail.com",
-
-    phone: "9876543211",
-
-    resume:
-      "https://res.cloudinary.com/demo/raw/upload/sample.pdf",
-
-    aiScore: 88,
-
-    status: "Accepted",
-  },
-
-  {
-    id: "3",
-
-    name: "Aman Singh",
-
-    email: "aman@gmail.com",
-
-    phone: "9876543212",
-
-    resume:
-      "https://res.cloudinary.com/demo/raw/upload/sample.pdf",
-
-    aiScore: 63,
-
-    status: "Rejected",
-  },
-
-  {
-    id: "4",
-
-    name: "Emily Watson",
-
-    email: "emily@gmail.com",
-
-    phone: "9876543213",
-
-    resume:
-      "https://res.cloudinary.com/demo/raw/upload/sample.pdf",
-
-    aiScore: 92,
-
-    status: "Interviewing",
-  },
-
-  {
-    id: "5",
-
-    name: "David Lee",
-
-    email: "david@gmail.com",
-
-    phone: "9876543214",
-
-    resume:
-      "https://res.cloudinary.com/demo/raw/upload/sample.pdf",
-
-    aiScore: 98,
-
-    status: "Accepted",
-  },
-];
-
-export default function CandidatePage() {
   return (
-    <div className="space-y-6 p-6">
-
-      <div>
-
-        <h1 className="text-3xl font-bold">
-          Candidates
-        </h1>
-
-        <p className="text-muted-foreground">
-          Manage all candidates from one place.
-        </p>
-
-      </div>
-
+    <div className="space-y-4 p-4">
+      <ScopeSelector widgets={widgets} jobs={jobs} />
       <CandidateToolbar />
-
-      <CandidateTable data={data} />
-
+      <CandidateTable data={rows} />
+      <div className="text-sm text-muted-foreground">
+        Showing {rows.length} of {total} candidates — page {page} of{" "}
+        {totalPages}
+      </div>
+      <PaginationControls
+        page={page}
+        totalPages={totalPages}
+        total={total}
+        pageSize={25}
+      />
     </div>
   );
 }

@@ -16,17 +16,17 @@ export default function TestWidget() {
       <h1>
         Testing HireFlow Widget
         <br />
-        cms0apk2s0001sz7kyvoshsb8
+        cmspy0fix0006sztwxvi0h3wy
       </h1>
 
       {/* Safely render the origin only after it is captured */}
       {origin && <h1 style={{ color: "#2563eb" }}>Origin: {origin}</h1>}
 
-      <div id="hireflow-widget" ></div>
+      <div id="hireflow-widget"></div>
 
       <Script
         src="http://localhost:3000/widget.js"
-        data-widget-id="cms0apk2s0001sz7kyvoshsb8"
+        data-widget-id="cmspy0fix0006sztwxvi0h3wy"
       />
     </div>
   );

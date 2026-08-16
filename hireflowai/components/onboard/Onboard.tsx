@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { Building2, Mail, MapPin, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { Building2, Mail, MapPin, ChevronRight, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 import {
   companyNameSchema,
@@ -9,10 +12,16 @@ import {
   onboardSchema,
 } from "@/lib/validation/onboard";
 
-import { Card } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
 
 import { FormData } from "@/lib/validation/onboard";
 
@@ -44,6 +53,8 @@ const STEPS = [
 ] as const;
 
 export default function Onboard() {
+  const router = useRouter();
+  const { data: session } = useSession();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -53,9 +64,17 @@ export default function Onboard() {
     address: "",
   });
 
+  // Pull the email from the logged-in session instead of asking for it
+  useEffect(() => {
+    if (session?.user?.email) {
+      setForm((prev) => ({ ...prev, email: session.user!.email! }));
+    }
+  }, [session]);
+
   const total = STEPS.length;
   const current = STEPS[step - 1];
   const Icon = current.icon;
+  const isEmailStep = current.key === "email";
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setForm((prev) => ({
@@ -126,12 +145,13 @@ export default function Onboard() {
         throw new Error(data.message);
       }
 
-      alert(data.message);
+      toast.success(data.message ?? "Account created successfully");
+      router.push("/admin/dashboard");
     } catch (error) {
       if (error instanceof Error) {
-        alert(error.message);
+        toast.error(error.message);
       } else {
-        alert("Something went wrong.");
+        toast.error("Something went wrong.");
       }
     } finally {
       setLoading(false);
@@ -139,11 +159,10 @@ export default function Onboard() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center  px-4">
-      <div className="w-full max-w-xl">
-        <Card className="border border-white/10 bg-[#050a18] p-8 shadow-2xl">
-          {/* Header */}
-          <div className="flex items-start gap-4">
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="w-[55vh]">
+        <Card className="border-white/10 bg-[#050a18] shadow-2xl">
+          <CardHeader className="flex flex-row items-start gap-4 space-y-0">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/5 border border-white/10">
               <Icon className="h-5 w-5 text-white" />
             </div>
@@ -151,29 +170,47 @@ export default function Onboard() {
               <h2 className="text-xl font-bold text-white">{current.title}</h2>
               <p className="mt-1 text-sm text-slate-400">{current.subtitle}</p>
             </div>
-          </div>
+          </CardHeader>
 
-          {/* Field */}
-          <div className="mt-8 space-y-2">
-            <Label className="text-sm font-medium text-white">
-              {current.label}
-            </Label>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-medium text-white">
+                  {current.label}
+                </Label>
+                <span className="text-xs text-slate-500">
+                  Step {step} of {total}
+                </span>
+              </div>
 
-            <Input
-              name={current.key}
-              value={form[current.key]}
-              onChange={handleChange}
-              placeholder={current.placeholder}
-              className="h-11 border-white/10 bg-black/40 text-white placeholder:text-slate-500 focus-visible:ring-1 focus-visible:ring-white/30"
+              <Input
+                name={current.key}
+                value={form[current.key]}
+                onChange={handleChange}
+                placeholder={current.placeholder}
+                readOnly={isEmailStep}
+                disabled={isEmailStep}
+                className="h-11 border-white/10 bg-black/40 text-white placeholder:text-slate-500 focus-visible:ring-1 focus-visible:ring-white/30 disabled:opacity-80 disabled:cursor-not-allowed"
+              />
+
+              {isEmailStep && (
+                <p className="text-xs text-slate-500">
+                  This is the email linked to your account.
+                </p>
+              )}
+
+              {errors[current.key] && (
+                <p className="text-sm text-red-500">{errors[current.key]}</p>
+              )}
+            </div>
+
+            <Progress
+              value={(step / total) * 100}
+              className="h-1.5 bg-white/15 [&>div]:bg-white"
             />
+          </CardContent>
 
-            {errors[current.key] && (
-              <p className="text-sm text-red-500">{errors[current.key]}</p>
-            )}
-          </div>
-
-          {/* Actions */}
-          <div className="mt-10 flex items-center justify-between">
+          <CardFooter className="flex items-center justify-between">
             {step > 1 ? (
               <Button
                 variant="outline"
@@ -201,43 +238,11 @@ export default function Onboard() {
                 onClick={submit}
                 className="bg-white text-black hover:bg-slate-200"
               >
-                {loading ? (
-                  <svg
-                    className="mr-2 h-4 w-4 animate-spin"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                  >
-                    <circle
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                      opacity="0.25"
-                    />
-                    <path
-                      d="M22 12a10 10 0 00-10-10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                  </svg>
-                ) : null}
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {loading ? "Creating..." : "Get Started"}
               </Button>
             )}
-          </div>
-
-          {/* Progress dots */}
-          <div className="mt-6 flex gap-2">
-            {STEPS.map((s, i) => (
-              <div
-                key={s.key}
-                className={`h-1.5 flex-1 rounded-full transition-colors ${
-                  i + 1 <= step ? "bg-white" : "bg-white/15"
-                }`}
-              />
-            ))}
-          </div>
+          </CardFooter>
         </Card>
       </div>
     </div>

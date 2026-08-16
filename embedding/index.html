@@ -1,0 +1,1348 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <style>
+      @layer base {
+        html,
+        body {
+          margin: 0;
+          padding: 0;
+        }
+        body {
+          overscroll-behavior: none;
+        }
+        main > :first-child {
+          margin-top: 0 !important;
+        }
+        main > :last-child {
+          margin-bottom: 0 !important;
+        }
+      }
+      ::-webkit-scrollbar {
+        display: none;
+      }
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .animate-fade-in-up {
+        animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      }
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#004bd3",
+              "tertiary-fixed-dim": "#c4c7c9",
+              "tertiary-fixed": "#e0e3e5",
+              "on-secondary-fixed-variant": "#005236",
+              "on-background": "#131b2e",
+              error: "#ba1a1a",
+              "inverse-surface": "#283044",
+              "on-tertiary-container": "#f4f6f8",
+              "secondary-fixed-dim": "#4edea3",
+              "secondary-container": "#6cf8bb",
+              "surface-container": "#eaedff",
+              "inverse-on-surface": "#eef0ff",
+              "on-tertiary": "#ffffff",
+              "on-surface": "#131b2e",
+              background: "#faf8ff",
+              "inverse-primary": "#b5c4ff",
+              "surface-bright": "#faf8ff",
+              "outline-variant": "#c3c5d8",
+              "surface-tint": "#0051e1",
+              tertiary: "#55595b",
+              "on-primary-container": "#f6f5ff",
+              "primary-container": "#1d63ff",
+              "surface-container-high": "#e2e7ff",
+              "on-tertiary-fixed-variant": "#444749",
+              "surface-container-low": "#f2f3ff",
+              "on-tertiary-fixed": "#191c1e",
+              "error-container": "#ffdad6",
+              "on-secondary-container": "#00714d",
+              "surface-dim": "#d2d9f4",
+              "secondary-fixed": "#6ffbbe",
+              "surface-variant": "#dae2fd",
+              "on-primary": "#ffffff",
+              "on-surface-variant": "#434656",
+              "on-error-container": "#93000a",
+              "on-secondary-fixed": "#002113",
+              "surface-container-highest": "#dae2fd",
+              "tertiary-container": "#6e7173",
+              "surface-container-lowest": "#ffffff",
+              surface: "#faf8ff",
+              "on-error": "#ffffff",
+              "on-secondary": "#ffffff",
+              "on-primary-fixed": "#00164d",
+              "primary-fixed-dim": "#b5c4ff",
+              "on-primary-fixed-variant": "#003cac",
+              secondary: "#006c49",
+              outline: "#737687",
+              "primary-fixed": "#dce1ff",
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+            spacing: {
+              "margin-mobile": "1rem",
+              "stack-sm": "0.5rem",
+              gutter: "1.5rem",
+              "stack-lg": "2rem",
+              "margin-desktop": "2rem",
+              "container-max": "1440px",
+              "stack-md": "1rem",
+            },
+            fontFamily: {
+              "body-lg": ["Inter"],
+              "headline-md": ["Inter"],
+              "label-md": ["Inter"],
+              "body-sm": ["Inter"],
+              "headline-lg-mobile": ["Inter"],
+              "body-md": ["Inter"],
+              "label-sm": ["Inter"],
+              "headline-lg": ["Inter"],
+              "headline-xl": ["Inter"],
+            },
+            fontSize: {
+              "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+              "headline-md": [
+                "24px",
+                { lineHeight: "32px", fontWeight: "600" },
+              ],
+              "label-md": [
+                "14px",
+                {
+                  lineHeight: "20px",
+                  letterSpacing: "0.05em",
+                  fontWeight: "600",
+                },
+              ],
+              "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+              "headline-lg-mobile": [
+                "24px",
+                { lineHeight: "32px", fontWeight: "600" },
+              ],
+              "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+              "label-sm": ["12px", { lineHeight: "16px", fontWeight: "500" }],
+              "headline-lg": [
+                "32px",
+                {
+                  lineHeight: "40px",
+                  letterSpacing: "-0.01em",
+                  fontWeight: "600",
+                },
+              ],
+              "headline-xl": [
+                "48px",
+                {
+                  lineHeight: "56px",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "700",
+                },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("animate-fade-in-up");
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.1 },
+        );
+        document.querySelectorAll("h1, h2, h3").forEach((el) => {
+          el.classList.add("opacity-0");
+          observer.observe(el);
+        });
+      });
+    </script>
+  </head>
+  <body class="bg-background font-body-md text-on-background">
+    <header
+      class="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-md shadow-[0_1px_8px_rgba(0,0,0,0.04)]"
+    >
+      <div
+        class="h-20 w-full px-margin-desktop max-w-container-max mx-auto flex items-center justify-between"
+      >
+        <div class="flex items-center gap-2">
+          <div
+            class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center"
+          >
+            <span class="material-symbols-outlined text-on-primary text-[20px]"
+              >flowsheet</span
+            >
+          </div>
+          <span
+            class="font-headline-md text-headline-md tracking-tight text-on-surface"
+            >Hireflow AI</span
+          >
+        </div>
+        <nav
+          class="hidden lg:flex items-center gap-stack-lg"
+          data-active-classes="text-primary font-bold"
+        >
+          <a
+            class="font-label-md text-label-md text-on-surface-variant hover:text-primary hover:scale-105 transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] inline-block"
+            data-path="product"
+            href="#"
+            >Product</a
+          ><a
+            class="font-label-md text-label-md text-on-surface-variant hover:text-primary hover:scale-105 transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] inline-block"
+            data-path="how-it-works"
+            href="#"
+            >How It Works</a
+          ><a
+            class="font-label-md text-label-md text-on-surface-variant hover:text-primary hover:scale-105 transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] inline-block"
+            data-path="features"
+            href="#"
+            >Features</a
+          ><a
+            class="font-label-md text-label-md text-on-surface-variant hover:text-primary hover:scale-105 transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] inline-block"
+            data-path="pricing"
+            href="#"
+            >Pricing</a
+          >
+          <div class="relative group">
+            <button
+              class="flex items-center gap-1 font-label-md text-label-md text-on-surface-variant hover:text-primary hover:scale-105 transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] inline-flex"
+            >
+              Resources
+              <span class="material-symbols-outlined text-[16px]"
+                >expand_more</span
+              >
+            </button>
+            <div class="absolute left-0 top-full pt-4 hidden group-hover:block">
+              <div
+                class="bg-surface shadow-lg rounded-xl border border-outline-variant p-2 w-48"
+              >
+                <a
+                  class="block px-4 py-2 text-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-lg"
+                  data-path="documentation"
+                  href="#"
+                  >Documentation</a
+                ><a
+                  class="block px-4 py-2 text-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-lg"
+                  data-path="help-center"
+                  href="#"
+                  >Help Center</a
+                ><a
+                  class="block px-4 py-2 text-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-lg"
+                  data-path="blog"
+                  href="#"
+                  >Blog</a
+                ><a
+                  class="block px-4 py-2 text-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded-lg"
+                  data-path="contact"
+                  href="#"
+                  >Contact</a
+                >
+              </div>
+            </div>
+          </div>
+        </nav>
+        <div class="flex items-center gap-stack-md">
+          <a
+            class="font-label-md text-label-md text-on-surface-variant hover:text-primary px-4 hover:scale-105 transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] inline-block"
+            data-path="login"
+            href="#"
+            >Log in</a
+          ><button
+            class="bg-primary text-on-primary font-label-md text-label-md px-6 py-3 rounded-lg hover:bg-primary/90 hover:-translate-y-[2px] hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] shadow-md"
+          >
+            Get Started Free
+          </button>
+        </div>
+      </div>
+    </header>
+    <main class="pt-20 w-full">
+      <div class="flex flex-col w-full bg-background relative overflow-hidden">
+        <!-- 1. HERO -->
+        <section
+          class="pt-32 pb-24 px-margin-desktop w-full relative z-10 max-w-container-max mx-auto"
+        >
+          <div
+            class="flex flex-col items-center text-center max-w-4xl mx-auto relative"
+          >
+            <div
+              class="absolute -top-32 -left-32 w-96 h-96 bg-primary/5 rounded-full blur-3xl -z-10"
+            ></div>
+            <div
+              class="absolute -top-24 -right-32 w-80 h-80 bg-secondary/5 rounded-full blur-3xl -z-10"
+            ></div>
+            <span
+              class="inline-block py-1.5 px-4 rounded-full bg-surface-container border border-outline-variant font-label-sm text-on-surface-variant uppercase tracking-wider mb-8"
+            >
+              AI-assisted hiring, built around your workflow
+            </span>
+            <h1
+              class="font-headline-xl text-[56px] leading-[64px] tracking-tight text-on-background mb-8 opacity-0"
+            >
+              From application to interview,
+              <span class="text-primary">without the busywork.</span>
+            </h1>
+            <p class="font-body-lg text-on-surface-variant max-w-3xl mb-10">
+              Hireflow AI helps hiring teams create jobs, collect applications,
+              evaluate candidates, manage hiring pipelines, and move the right
+              people toward interviews from one place.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center gap-4 mb-16">
+              <button
+                class="bg-primary hover:bg-primary-fixed-variant text-on-primary font-label-md px-8 py-4 rounded-lg hover:-translate-y-[2px] hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] shadow-md w-full sm:w-auto"
+              >
+                Get Started Free
+              </button>
+              <button
+                class="bg-surface hover:bg-surface-container border border-outline-variant text-on-surface font-label-md px-8 py-4 rounded-lg transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-[2px] hover:shadow-md w-full sm:w-auto flex items-center justify-center gap-2"
+              >
+                See How It Works
+                <span class="material-symbols-outlined text-[18px]"
+                  >arrow_forward</span
+                >
+              </button>
+            </div>
+            <div class="w-full relative group">
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10 pointer-events-none rounded-xl"
+              ></div>
+              <img
+                alt="Hireflow AI Dashboard"
+                class="w-full h-auto rounded-xl shadow-2xl border border-outline-variant group-hover:-translate-y-2 transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuA988XWhATKTSaIrk3lgEnI6XIOyx41erHVp0MgYyccwJc8p9hT4ivnwWWi2iuzg1VyWDQka1VUDu2jAvQ86hhWOsq9uI0otfgmXHIJtRySiURVm-NNkIwQvEvTuab7foEY11SlQMnsU41aBtF-KBoG-lSkbMYM0Snf3fR_t70Qr_qQ-3gAq3O_bkFt9OZQG1CXPUtfQ8HDR-d685y3lqVuHqDRyownWduGqd7vHh_dmvJLLVd58CYwvOZmm_9JkjVGDQ"
+              />
+            </div>
+            <div
+              class="flex flex-wrap justify-center gap-8 mt-12 pt-8 border-t border-outline-variant/50"
+            >
+              <div class="flex items-center gap-2 text-on-surface-variant">
+                <span class="material-symbols-outlined text-primary text-[20px]"
+                  >check_circle</span
+                >
+                <span class="font-body-sm">Easy to embed</span>
+              </div>
+              <div class="flex items-center gap-2 text-on-surface-variant">
+                <span class="material-symbols-outlined text-primary text-[20px]"
+                  >check_circle</span
+                >
+                <span class="font-body-sm">AI-assisted evaluation</span>
+              </div>
+              <div class="flex items-center gap-2 text-on-surface-variant">
+                <span class="material-symbols-outlined text-primary text-[20px]"
+                  >check_circle</span
+                >
+                <span class="font-body-sm">Candidate management</span>
+              </div>
+              <div class="flex items-center gap-2 text-on-surface-variant">
+                <span class="material-symbols-outlined text-primary text-[20px]"
+                  >check_circle</span
+                >
+                <span class="font-body-sm">Interview workflow</span>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- 2. PROBLEM -->
+        <section
+          class="py-24 px-margin-desktop w-full bg-surface-container-low border-y border-outline-variant/50"
+        >
+          <div class="max-w-container-max mx-auto">
+            <div class="text-center mb-16">
+              <h2 class="font-headline-lg text-on-background mb-4 opacity-0">
+                Hiring gets messy fast.
+              </h2>
+              <p class="font-body-lg text-on-surface-variant max-w-2xl mx-auto">
+                Traditional hiring is a patchwork of tools, manual screening,
+                and lost context.
+              </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <!-- Problem 1 -->
+              <div
+                class="bg-surface p-8 rounded-xl shadow-sm border border-outline-variant relative overflow-hidden group hover:scale-[1.01] transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+              >
+                <div class="absolute top-0 left-0 w-full h-1 bg-error/80"></div>
+                <div
+                  class="w-12 h-12 bg-error-container rounded-lg flex items-center justify-center mb-6"
+                >
+                  <span
+                    class="material-symbols-outlined text-on-error-container"
+                    >inbox_customize</span
+                  >
+                </div>
+                <h3 class="font-headline-md text-on-surface mb-3 opacity-0">
+                  Too Many Applications
+                </h3>
+                <p class="font-body-sm text-on-surface-variant">
+                  Great candidates get buried in overflowing inboxes. Finding
+                  the right fit feels like finding a needle in a haystack.
+                </p>
+              </div>
+              <!-- Problem 2 -->
+              <div
+                class="bg-surface p-8 rounded-xl shadow-sm border border-outline-variant relative overflow-hidden group hover:scale-[1.01] transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+              >
+                <div
+                  class="absolute top-0 left-0 w-full h-1 bg-tertiary/80"
+                ></div>
+                <div
+                  class="w-12 h-12 bg-surface-container-high rounded-lg flex items-center justify-center mb-6"
+                >
+                  <span class="material-symbols-outlined text-on-surface"
+                    >search_insights</span
+                  >
+                </div>
+                <h3 class="font-headline-md text-on-surface mb-3 opacity-0">
+                  Manual Screening
+                </h3>
+                <p class="font-body-sm text-on-surface-variant">
+                  Hours wasted reading through unqualified resumes. The initial
+                  screening process is slow, biased, and inefficient.
+                </p>
+              </div>
+              <!-- Problem 3 -->
+              <div
+                class="bg-surface p-8 rounded-xl shadow-sm border border-outline-variant relative overflow-hidden group hover:scale-[1.01] transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+              >
+                <div
+                  class="absolute top-0 left-0 w-full h-1 bg-outline/80"
+                ></div>
+                <div
+                  class="w-12 h-12 bg-surface-container-high rounded-lg flex items-center justify-center mb-6"
+                >
+                  <span class="material-symbols-outlined text-on-surface"
+                    >cable</span
+                  >
+                </div>
+                <h3 class="font-headline-md text-on-surface mb-3 opacity-0">
+                  Disconnected Tools
+                </h3>
+                <p class="font-body-sm text-on-surface-variant">
+                  Jumping between email, spreadsheets, and clunky legacy ATS
+                  systems leads to dropped balls and poor candidate experience.
+                </p>
+              </div>
+            </div>
+            <div class="mt-16 text-center">
+              <p
+                class="font-headline-md text-primary inline-flex items-center gap-2"
+              >
+                Hireflow AI connects the flow.
+                <span class="material-symbols-outlined">trending_flat</span>
+              </p>
+            </div>
+          </div>
+        </section>
+        <!-- 3. HOW IT WORKS -->
+        <section class="py-24 px-margin-desktop w-full bg-background">
+          <div class="max-w-container-max mx-auto">
+            <div class="text-center mb-20">
+              <span
+                class="font-label-md text-primary uppercase tracking-widest mb-4 block"
+                >The Process</span
+              >
+              <h2 class="font-headline-lg text-on-background opacity-0">
+                A better hiring workflow.
+              </h2>
+            </div>
+            <div class="relative">
+              <!-- Connecting Line -->
+              <div
+                class="hidden md:block absolute top-12 left-[10%] right-[10%] h-[2px] bg-outline-variant/30 z-0"
+              ></div>
+              <div class="grid grid-cols-1 md:grid-cols-4 gap-8 relative z-10">
+                <!-- Step 1 -->
+                <div
+                  class="flex flex-col items-center text-center p-4 rounded-xl hover:-translate-y-1 hover:shadow-md hover:bg-surface-container transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                >
+                  <div
+                    class="w-24 h-24 bg-surface rounded-full shadow-md border-2 border-primary flex items-center justify-center mb-6 relative z-10"
+                  >
+                    <span class="font-headline-lg text-primary">01</span>
+                  </div>
+                  <h3 class="font-headline-md text-on-surface mb-2 opacity-0">
+                    Create a Job
+                  </h3>
+                  <p class="font-body-sm text-on-surface-variant">
+                    Define role criteria, required skills, and experience level
+                    in minutes.
+                  </p>
+                </div>
+                <!-- Step 2 -->
+                <div
+                  class="flex flex-col items-center text-center p-4 rounded-xl hover:-translate-y-1 hover:shadow-md hover:bg-surface-container transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                >
+                  <div
+                    class="w-24 h-24 bg-surface rounded-full shadow-md border-2 border-outline-variant flex items-center justify-center mb-6 relative z-10"
+                  >
+                    <span class="font-headline-lg text-on-surface-variant"
+                      >02</span
+                    >
+                  </div>
+                  <h3 class="font-headline-md text-on-surface mb-2 opacity-0">
+                    Collect Applications
+                  </h3>
+                  <p class="font-body-sm text-on-surface-variant">
+                    Use our embeddable widget to gather resumes directly on your
+                    site.
+                  </p>
+                </div>
+                <!-- Step 3 -->
+                <div
+                  class="flex flex-col items-center text-center p-4 rounded-xl hover:-translate-y-1 hover:shadow-md hover:bg-surface-container transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                >
+                  <div
+                    class="w-24 h-24 bg-surface rounded-full shadow-md border-2 border-outline-variant flex items-center justify-center mb-6 relative z-10"
+                  >
+                    <span class="font-headline-lg text-on-surface-variant"
+                      >03</span
+                    >
+                  </div>
+                  <h3 class="font-headline-md text-on-surface mb-2 opacity-0">
+                    Evaluate Candidates
+                  </h3>
+                  <p class="font-body-sm text-on-surface-variant">
+                    AI-assisted scoring highlights top matches instantly based
+                    on your criteria.
+                  </p>
+                </div>
+                <!-- Step 4 -->
+                <div
+                  class="flex flex-col items-center text-center p-4 rounded-xl hover:-translate-y-1 hover:shadow-md hover:bg-surface-container transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                >
+                  <div
+                    class="w-24 h-24 bg-surface rounded-full shadow-md border-2 border-outline-variant flex items-center justify-center mb-6 relative z-10"
+                  >
+                    <span class="font-headline-lg text-on-surface-variant"
+                      >04</span
+                    >
+                  </div>
+                  <h3 class="font-headline-md text-on-surface mb-2 opacity-0">
+                    Move to Interview
+                  </h3>
+                  <p class="font-body-sm text-on-surface-variant">
+                    Manage the pipeline and schedule interviews from a single
+                    dashboard.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- 4. WIDGET SECTION -->
+        <section
+          class="py-24 w-full bg-surface-container-low border-y border-outline-variant/50 overflow-hidden"
+        >
+          <div class="max-w-container-max mx-auto px-margin-desktop">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+              <div>
+                <h2 class="font-headline-lg text-on-background mb-6 opacity-0">
+                  Your careers page. Your brand. Your application flow.
+                </h2>
+                <p class="font-body-lg text-on-surface-variant mb-8">
+                  Embed the Hireflow AI application widget directly onto your
+                  existing website. Candidates get a seamless experience
+                  uploading their resume and answering custom questions, while
+                  you get perfectly structured data instantly synced to your
+                  pipeline.
+                </p>
+                <div class="flex gap-4">
+                  <button
+                    class="bg-primary hover:bg-primary-fixed-variant text-on-primary font-label-md px-6 py-3 rounded-lg shadow-sm hover:-translate-y-[2px] hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                  >
+                    Get Started
+                  </button>
+                  <button
+                    class="bg-surface hover:bg-surface-container text-on-surface border border-outline-variant font-label-md px-6 py-3 rounded-lg transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-[2px] hover:shadow-md"
+                  >
+                    See Widget in Action
+                  </button>
+                </div>
+              </div>
+              <div class="relative">
+                <!-- Decorative blob -->
+                <div
+                  class="absolute inset-0 bg-primary/10 rounded-full blur-3xl transform scale-110"
+                ></div>
+                <div
+                  class="bg-surface rounded-xl shadow-xl border border-outline-variant p-8 relative z-10"
+                >
+                  <div
+                    class="flex items-center justify-between mb-8 pb-4 border-b border-outline-variant"
+                  >
+                    <div
+                      class="w-24 h-6 bg-surface-container rounded animate-pulse"
+                    ></div>
+                    <span class="font-label-sm text-on-surface-variant"
+                      >Careers</span
+                    >
+                  </div>
+                  <h3 class="font-headline-md text-on-surface mb-2 opacity-0">
+                    Frontend Developer
+                  </h3>
+                  <p
+                    class="font-body-sm text-on-surface-variant mb-6 flex items-center gap-2"
+                  >
+                    <span class="material-symbols-outlined text-[16px]"
+                      >location_on</span
+                    >
+                    Remote, US
+                    <span class="material-symbols-outlined text-[16px] ml-2"
+                      >work</span
+                    >
+                    Full-time
+                  </p>
+                  <div
+                    class="bg-surface-container-low rounded-lg border border-outline-variant/50 border-dashed p-8 flex flex-col items-center justify-center text-center mb-6 hover:bg-surface-container transition-colors cursor-pointer"
+                  >
+                    <div
+                      class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4"
+                    >
+                      <span class="material-symbols-outlined text-primary"
+                        >cloud_upload</span
+                      >
+                    </div>
+                    <span class="font-label-md text-on-surface block mb-1"
+                      >Upload Resume (PDF)</span
+                    >
+                    <span class="font-body-sm text-on-surface-variant"
+                      >Drag and drop or click to browse</span
+                    >
+                  </div>
+                  <button
+                    class="w-full bg-primary text-on-primary font-label-md py-3 rounded-lg opacity-50 cursor-not-allowed"
+                  >
+                    Submit Application
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- 5. AI EVALUATION -->
+        <section class="py-24 px-margin-desktop w-full bg-background">
+          <div class="max-w-container-max mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+              <!-- Interactive Card UI -->
+              <div class="order-2 lg:order-1 relative">
+                <div
+                  class="absolute -inset-4 bg-gradient-to-br from-secondary/10 to-transparent rounded-3xl -z-10 blur-xl"
+                ></div>
+                <div
+                  class="bg-surface rounded-xl shadow-lg border border-outline-variant overflow-hidden"
+                >
+                  <!-- Card Header -->
+                  <div
+                    class="p-6 border-b border-outline-variant flex justify-between items-start bg-surface-bright"
+                  >
+                    <div class="flex items-center gap-4">
+                      <div
+                        class="w-14 h-14 bg-surface-container rounded-full flex items-center justify-center overflow-hidden border border-outline-variant"
+                      >
+                        <img
+                          class="w-full h-full object-cover"
+                          data-alt="Professional headshot portrait of a young male software developer, neutral background, modern lighting."
+                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjjssnVr7eMLIHST8g09EsbojdjD84evvZIX0s56gF3l4VoaQaRQl9JlXkA0eOxxXC1POL7ZoOmTYZwobR5qwmewQlnStBs1Xh2yL1Kr6V05OGY_Bigc6MoBKZjuWe0pdeEaK4mNFKp5ULpe6nnGfcyfQ3M00rC363Yv8HiskRA_7KcSepIaQ5KWZk854m7Nt0R-CUT1pTUJ254GqjE-1bbuio7hpOi5sgJjyqhYRhQmAPPMcRSmud"
+                        />
+                      </div>
+                      <div>
+                        <h3
+                          class="font-headline-md text-on-surface m-0 opacity-0"
+                        >
+                          Arjun Sharma
+                        </h3>
+                        <p class="font-body-sm text-on-surface-variant m-0">
+                          Frontend Developer Applicant
+                        </p>
+                      </div>
+                    </div>
+                    <div class="flex flex-col items-end">
+                      <span
+                        class="inline-flex items-center gap-1 px-3 py-1 bg-secondary-container text-on-secondary-container rounded-full font-label-sm"
+                      >
+                        <span class="material-symbols-outlined text-[14px]"
+                          >auto_awesome</span
+                        >
+                        92% Match
+                      </span>
+                    </div>
+                  </div>
+                  <!-- Score Breakdown -->
+                  <div
+                    class="p-6 grid grid-cols-3 gap-4 border-b border-outline-variant"
+                  >
+                    <div>
+                      <span
+                        class="block font-label-sm text-on-surface-variant mb-1"
+                        >Skills</span
+                      >
+                      <div class="flex items-end gap-2">
+                        <span
+                          class="font-headline-md text-on-surface leading-none"
+                          >94%</span
+                        >
+                        <div
+                          class="w-full bg-surface-container h-1.5 rounded-full mb-1"
+                        >
+                          <div
+                            class="bg-secondary h-1.5 rounded-full w-[94%]"
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <span
+                        class="block font-label-sm text-on-surface-variant mb-1"
+                        >Experience</span
+                      >
+                      <div class="flex items-end gap-2">
+                        <span
+                          class="font-headline-md text-on-surface leading-none"
+                          >88%</span
+                        >
+                        <div
+                          class="w-full bg-surface-container h-1.5 rounded-full mb-1"
+                        >
+                          <div
+                            class="bg-secondary h-1.5 rounded-full w-[88%]"
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <span
+                        class="block font-label-sm text-on-surface-variant mb-1"
+                        >Education</span
+                      >
+                      <div class="flex items-end gap-2">
+                        <span
+                          class="font-headline-md text-on-surface leading-none"
+                          >96%</span
+                        >
+                        <div
+                          class="w-full bg-surface-container h-1.5 rounded-full mb-1"
+                        >
+                          <div
+                            class="bg-secondary h-1.5 rounded-full w-[96%]"
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Skills Match -->
+                  <div class="p-6">
+                    <h4 class="font-label-md text-on-surface mb-3">
+                      Matched Skills
+                    </h4>
+                    <div class="flex flex-wrap gap-2 mb-6">
+                      <span
+                        class="px-2 py-1 bg-surface-container text-on-surface font-body-sm rounded"
+                        >React</span
+                      >
+                      <span
+                        class="px-2 py-1 bg-surface-container text-on-surface font-body-sm rounded"
+                        >TypeScript</span
+                      >
+                      <span
+                        class="px-2 py-1 bg-surface-container text-on-surface font-body-sm rounded"
+                        >JavaScript</span
+                      >
+                      <span
+                        class="px-2 py-1 bg-surface-container text-on-surface font-body-sm rounded"
+                        >Node.js</span
+                      >
+                      <span
+                        class="px-2 py-1 bg-surface-container text-on-surface font-body-sm rounded"
+                        >Tailwind CSS</span
+                      >
+                    </div>
+                    <h4 class="font-label-md text-on-surface mb-3">
+                      Missing Requirements
+                    </h4>
+                    <div class="flex flex-wrap gap-2">
+                      <span
+                        class="px-2 py-1 bg-error-container text-on-error-container font-body-sm rounded border border-error/20"
+                        >AWS (Preferred)</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Text Content -->
+              <div class="order-1 lg:order-2">
+                <h2 class="font-headline-lg text-on-background mb-6 opacity-0">
+                  Let AI handle the first pass.
+                </h2>
+                <p class="font-body-lg text-on-surface-variant mb-6">
+                  Stop reading hundreds of resumes to find the top 10%.
+                  Hireflow's AI instantly analyzes incoming applications against
+                  your job criteria, providing a clear match score and
+                  breakdown.
+                </p>
+                <div
+                  class="bg-surface-container-low p-4 rounded-lg border-l-4 border-primary"
+                >
+                  <p class="font-body-sm text-on-surface-variant italic">
+                    "AI helps surface useful candidate insights based purely on
+                    the structured criteria you set. Your hiring team stays in
+                    control of the final decision, completely avoiding automated
+                    rejections."
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- 6. PIPELINE & DASHBOARD -->
+        <section
+          class="py-24 px-margin-desktop w-full bg-surface-container-lowest border-t border-outline-variant/50"
+        >
+          <div class="max-w-container-max mx-auto">
+            <div class="text-center mb-16">
+              <h2 class="font-headline-lg text-on-background mb-4 opacity-0">
+                See every candidate. Know what happens next.
+              </h2>
+              <p class="font-body-lg text-on-surface-variant max-w-2xl mx-auto">
+                Visual pipelines keep your entire hiring team aligned on who is
+                where in the process.
+              </p>
+            </div>
+            <!-- Pipeline Visualization -->
+            <div class="w-full overflow-x-auto pb-8 snap-x">
+              <div class="flex gap-6 min-w-max px-4">
+                <!-- Column 1: Applied -->
+                <div
+                  class="w-80 bg-surface-container-low rounded-xl p-4 flex flex-col gap-4 snap-center border border-outline-variant/30"
+                >
+                  <div class="flex justify-between items-center px-2">
+                    <span
+                      class="font-label-md text-on-surface uppercase tracking-wider"
+                      >Applied</span
+                    >
+                    <span
+                      class="bg-surface-variant text-on-surface-variant px-2 py-0.5 rounded-full text-xs font-bold"
+                      >24</span
+                    >
+                  </div>
+                  <div
+                    class="bg-surface p-4 rounded-lg shadow-sm border border-outline-variant/50 cursor-pointer hover:border-primary hover:-translate-y-1 hover:shadow-md transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                  >
+                    <div class="flex justify-between items-start mb-2">
+                      <span class="font-label-md text-on-surface block"
+                        >Sarah Jenkins</span
+                      >
+                      <span
+                        class="text-xs font-bold text-on-secondary-container bg-secondary-container px-2 rounded-full"
+                        >95%</span
+                      >
+                    </div>
+                    <span
+                      class="font-body-sm text-on-surface-variant block mb-3"
+                      >Product Designer</span
+                    >
+                    <div class="flex gap-2">
+                      <span
+                        class="text-[10px] uppercase font-bold text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded"
+                        >Figma</span
+                      >
+                      <span
+                        class="text-[10px] uppercase font-bold text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded"
+                        >UX</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    class="bg-surface p-4 rounded-lg shadow-sm border border-outline-variant/50 cursor-pointer hover:border-primary hover:-translate-y-1 hover:shadow-md transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                  >
+                    <div class="flex justify-between items-start mb-2">
+                      <span class="font-label-md text-on-surface block"
+                        >David Chen</span
+                      >
+                      <span
+                        class="text-xs font-bold text-on-surface-variant bg-surface-container px-2 rounded-full"
+                        >78%</span
+                      >
+                    </div>
+                    <span
+                      class="font-body-sm text-on-surface-variant block mb-3"
+                      >Product Designer</span
+                    >
+                  </div>
+                </div>
+                <!-- Column 2: Screening -->
+                <div
+                  class="w-80 bg-surface-container-low rounded-xl p-4 flex flex-col gap-4 snap-center border border-outline-variant/30"
+                >
+                  <div class="flex justify-between items-center px-2">
+                    <span
+                      class="font-label-md text-on-surface uppercase tracking-wider"
+                      >Screening</span
+                    >
+                    <span
+                      class="bg-surface-variant text-on-surface-variant px-2 py-0.5 rounded-full text-xs font-bold"
+                      >8</span
+                    >
+                  </div>
+                  <div
+                    class="bg-surface p-4 rounded-lg shadow-sm border border-outline-variant/50 cursor-pointer hover:border-primary hover:-translate-y-1 hover:shadow-md transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                  >
+                    <div class="flex justify-between items-start mb-2">
+                      <span class="font-label-md text-on-surface block"
+                        >Arjun Sharma</span
+                      >
+                      <span
+                        class="text-xs font-bold text-on-secondary-container bg-secondary-container px-2 rounded-full"
+                        >92%</span
+                      >
+                    </div>
+                    <span
+                      class="font-body-sm text-on-surface-variant block mb-3"
+                      >Frontend Dev</span
+                    >
+                    <div
+                      class="w-full bg-surface-container h-1 rounded-full overflow-hidden mt-2"
+                    >
+                      <div class="bg-primary h-full w-1/2"></div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Column 3: Interview -->
+                <div
+                  class="w-80 bg-surface-container-low rounded-xl p-4 flex flex-col gap-4 snap-center border border-primary/20 bg-primary/5"
+                >
+                  <div class="flex justify-between items-center px-2">
+                    <span
+                      class="font-label-md text-primary uppercase tracking-wider"
+                      >Interview</span
+                    >
+                    <span
+                      class="bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded-full text-xs font-bold"
+                      >3</span
+                    >
+                  </div>
+                  <div
+                    class="bg-surface p-4 rounded-lg shadow-md border border-primary/50 cursor-pointer relative overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                  >
+                    <div
+                      class="absolute left-0 top-0 bottom-0 w-1 bg-primary"
+                    ></div>
+                    <div class="flex justify-between items-start mb-2">
+                      <span class="font-label-md text-on-surface block"
+                        >Emily Ross</span
+                      >
+                      <span
+                        class="text-xs font-bold text-on-secondary-container bg-secondary-container px-2 rounded-full"
+                        >98%</span
+                      >
+                    </div>
+                    <span
+                      class="font-body-sm text-on-surface-variant block mb-4"
+                      >Senior Backend</span
+                    >
+                    <div
+                      class="flex items-center gap-2 text-xs font-medium text-primary bg-primary/10 p-2 rounded"
+                    >
+                      <span class="material-symbols-outlined text-[14px]"
+                        >calendar_month</span
+                      >
+                      Tomorrow, 10:00 AM
+                    </div>
+                  </div>
+                </div>
+                <!-- Column 4: Offered -->
+                <div
+                  class="w-80 bg-surface-container-low rounded-xl p-4 flex flex-col gap-4 snap-center border border-outline-variant/30 opacity-70"
+                >
+                  <div class="flex justify-between items-center px-2">
+                    <span
+                      class="font-label-md text-on-surface uppercase tracking-wider"
+                      >Offered</span
+                    >
+                    <span
+                      class="bg-surface-variant text-on-surface-variant px-2 py-0.5 rounded-full text-xs font-bold"
+                      >1</span
+                    >
+                  </div>
+                  <div
+                    class="bg-surface p-4 rounded-lg shadow-sm border border-outline-variant/50 cursor-pointer hover:border-primary hover:-translate-y-1 hover:shadow-md transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                  >
+                    <div class="flex justify-between items-start mb-2">
+                      <span class="font-label-md text-on-surface block"
+                        >Michael Chang</span
+                      >
+                    </div>
+                    <span
+                      class="font-body-sm text-on-surface-variant block mb-3"
+                      >DevOps Engineer</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Full Dashboard Image -->
+            <div class="mt-24">
+              <h3
+                class="font-headline-md text-center text-on-background mb-8 opacity-0"
+              >
+                Everything your hiring team needs, in one workspace.
+              </h3>
+              <div
+                class="w-full relative rounded-xl overflow-hidden shadow-2xl border border-outline-variant"
+              >
+                <img
+                  alt="Hireflow AI Full Dashboard UI"
+                  class="w-full h-auto object-cover"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUF3A_XSSJLrHsODeGPIzC4P19EVfcSlPGziKPzv4ehy2V3DC8n7L5xJ7APYgUhG2wy5jETxryJOB-Sskl7v3UahId9LZQJRnn0IL-DGINehu_R_9hMOYYW538oRwgdufA9hP7SCXniu_v6aWulLXnVH9XZEpi-FIf8gQTYI5qOUmW1Eysuk_VGSpmi_j9Lthhu0nYYiL1IVSR0ogaousD3wKJ2cGK1xDXk-a-TDUupkHmJmEYEuIhASj3a38ZOAzmEA"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- 12. PRICING -->
+        <section
+          class="py-24 px-margin-desktop w-full bg-surface-container-low border-t border-outline-variant"
+        >
+          <div class="max-w-container-max mx-auto">
+            <div class="text-center mb-16">
+              <h2 class="font-headline-lg text-on-background mb-4 opacity-0">
+                Simple, transparent pricing.
+              </h2>
+              <p class="font-body-lg text-on-surface-variant">
+                Scale your hiring without scaling your costs.
+              </p>
+            </div>
+            <div
+              class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto"
+            >
+              <!-- Starter -->
+              <div
+                class="bg-surface rounded-2xl p-8 border border-outline-variant shadow-sm flex flex-col hover:scale-[1.01] hover:-translate-y-1 hover:shadow-md transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+              >
+                <h3 class="font-headline-md text-on-surface mb-2 opacity-0">
+                  Starter
+                </h3>
+                <p class="font-body-sm text-on-surface-variant mb-6 h-10">
+                  Perfect for small teams making their first hires.
+                </p>
+                <div class="mb-8">
+                  <span class="font-headline-xl text-on-surface">$49</span>
+                  <span class="font-body-sm text-on-surface-variant">/mo</span>
+                </div>
+                <button
+                  class="w-full py-3 px-4 bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md rounded-lg mb-8 transition-colors border border-outline-variant hover:-translate-y-[2px] hover:shadow-md transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                >
+                  Start Free Trial
+                </button>
+                <ul class="flex flex-col gap-4 flex-grow">
+                  <li class="flex items-start gap-3">
+                    <span
+                      class="material-symbols-outlined text-primary text-[20px] mt-0.5"
+                      >check</span
+                    >
+                    <span class="font-body-sm text-on-surface-variant"
+                      >Up to 3 active jobs</span
+                    >
+                  </li>
+                  <li class="flex items-start gap-3">
+                    <span
+                      class="material-symbols-outlined text-primary text-[20px] mt-0.5"
+                      >check</span
+                    >
+                    <span class="font-body-sm text-on-surface-variant"
+                      >Embeddable application widget</span
+                    >
+                  </li>
+                  <li class="flex items-start gap-3">
+                    <span
+                      class="material-symbols-outlined text-primary text-[20px] mt-0.5"
+                      >check</span
+                    >
+                    <span class="font-body-sm text-on-surface-variant"
+                      >Basic candidate pipeline</span
+                    >
+                  </li>
+                </ul>
+              </div>
+              <!-- Growth (Highlighted) -->
+              <div
+                class="bg-surface rounded-2xl p-8 border-2 border-primary shadow-xl flex flex-col relative transform md:-translate-y-4 hover:scale-[1.01] hover:shadow-2xl transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+              >
+                <div
+                  class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-on-primary font-label-sm px-3 py-1 rounded-full uppercase tracking-wider"
+                >
+                  Most Popular
+                </div>
+                <h3 class="font-headline-md text-on-surface mb-2 opacity-0">
+                  Growth
+                </h3>
+                <p class="font-body-sm text-on-surface-variant mb-6 h-10">
+                  For growing companies actively scaling their team.
+                </p>
+                <div class="mb-8">
+                  <span class="font-headline-xl text-on-surface">$149</span>
+                  <span class="font-body-sm text-on-surface-variant">/mo</span>
+                </div>
+                <button
+                  class="w-full py-3 px-4 bg-primary hover:bg-primary-fixed-variant text-on-primary font-label-md rounded-lg mb-8 transition-colors shadow-md hover:-translate-y-[2px] hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                >
+                  Start Free Trial
+                </button>
+                <ul class="flex flex-col gap-4 flex-grow">
+                  <li class="flex items-start gap-3">
+                    <span
+                      class="material-symbols-outlined text-primary text-[20px] mt-0.5"
+                      >check</span
+                    >
+                    <span class="font-body-sm text-on-surface"
+                      >Unlimited active jobs</span
+                    >
+                  </li>
+                  <li class="flex items-start gap-3">
+                    <span
+                      class="material-symbols-outlined text-primary text-[20px] mt-0.5"
+                      >check</span
+                    >
+                    <span class="font-body-sm text-on-surface font-semibold"
+                      >AI-assisted evaluation</span
+                    >
+                  </li>
+                  <li class="flex items-start gap-3">
+                    <span
+                      class="material-symbols-outlined text-primary text-[20px] mt-0.5"
+                      >check</span
+                    >
+                    <span class="font-body-sm text-on-surface"
+                      >Custom interview workflows</span
+                    >
+                  </li>
+                  <li class="flex items-start gap-3">
+                    <span
+                      class="material-symbols-outlined text-primary text-[20px] mt-0.5"
+                      >check</span
+                    >
+                    <span class="font-body-sm text-on-surface"
+                      >Team collaboration tools</span
+                    >
+                  </li>
+                </ul>
+              </div>
+              <!-- Enterprise -->
+              <div
+                class="bg-surface rounded-2xl p-8 border border-outline-variant shadow-sm flex flex-col hover:scale-[1.01] hover:-translate-y-1 hover:shadow-md transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+              >
+                <h3 class="font-headline-md text-on-surface mb-2 opacity-0">
+                  Enterprise
+                </h3>
+                <p class="font-body-sm text-on-surface-variant mb-6 h-10">
+                  Custom workflows and advanced security for large orgs.
+                </p>
+                <div class="mb-8">
+                  <span class="font-headline-xl text-on-surface">Custom</span>
+                </div>
+                <button
+                  class="w-full py-3 px-4 bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md rounded-lg mb-8 transition-colors border border-outline-variant hover:-translate-y-[2px] hover:shadow-md transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                >
+                  Contact Sales
+                </button>
+                <ul class="flex flex-col gap-4 flex-grow">
+                  <li class="flex items-start gap-3">
+                    <span
+                      class="material-symbols-outlined text-primary text-[20px] mt-0.5"
+                      >check</span
+                    >
+                    <span class="font-body-sm text-on-surface-variant"
+                      >Everything in Growth</span
+                    >
+                  </li>
+                  <li class="flex items-start gap-3">
+                    <span
+                      class="material-symbols-outlined text-primary text-[20px] mt-0.5"
+                      >check</span
+                    >
+                    <span class="font-body-sm text-on-surface-variant"
+                      >SSO &amp; Advanced Security</span
+                    >
+                  </li>
+                  <li class="flex items-start gap-3">
+                    <span
+                      class="material-symbols-outlined text-primary text-[20px] mt-0.5"
+                      >check</span
+                    >
+                    <span class="font-body-sm text-on-surface-variant"
+                      >Custom Integrations API</span
+                    >
+                  </li>
+                  <li class="flex items-start gap-3">
+                    <span
+                      class="material-symbols-outlined text-primary text-[20px] mt-0.5"
+                      >check</span
+                    >
+                    <span class="font-body-sm text-on-surface-variant"
+                      >Dedicated Success Manager</span
+                    >
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- 14. FINAL CTA -->
+        <section
+          class="py-32 px-margin-desktop w-full bg-primary relative overflow-hidden"
+        >
+          <div
+            class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"
+          ></div>
+          <div class="max-w-container-max mx-auto text-center relative z-10">
+            <h2
+              class="font-headline-xl text-on-primary mb-6 max-w-3xl mx-auto tracking-tight opacity-0"
+            >
+              Ready to simplify your hiring process?
+            </h2>
+            <p class="font-body-lg text-primary-fixed mb-12 max-w-2xl mx-auto">
+              Join hundreds of modern companies using Hireflow AI to find,
+              evaluate, and hire the best talent faster.
+            </p>
+            <div
+              class="flex flex-col sm:flex-row items-center justify-center gap-4"
+            >
+              <button
+                class="bg-surface text-primary font-label-md px-8 py-4 rounded-lg shadow-lg hover:shadow-xl hover:-translate-y-[2px] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] w-full sm:w-auto"
+              >
+                Get Started Free
+              </button>
+              <button
+                class="bg-primary-fixed/20 text-on-primary border border-primary-fixed/30 hover:bg-primary-fixed/30 font-label-md px-8 py-4 rounded-lg transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-[2px] hover:shadow-lg w-full sm:w-auto"
+              >
+                Book a Demo
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+    <footer
+      class="bg-surface-container-low border-t border-outline-variant mt-stack-lg"
+    >
+      <div class="max-w-container-max mx-auto px-margin-desktop py-16">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-gutter mb-12">
+          <div class="flex flex-col gap-stack-sm">
+            <span class="font-label-md text-label-md text-on-surface mb-2"
+              >Product</span
+            ><a
+              class="text-body-sm text-on-surface-variant hover:text-primary transition-colors"
+              href="#"
+              >Features</a
+            ><a
+              class="text-body-sm text-on-surface-variant hover:text-primary transition-colors"
+              href="#"
+              >How It Works</a
+            ><a
+              class="text-body-sm text-on-surface-variant hover:text-primary transition-colors"
+              href="#"
+              >Pricing</a
+            >
+          </div>
+          <div class="flex flex-col gap-stack-sm">
+            <span class="font-label-md text-label-md text-on-surface mb-2"
+              >Resources</span
+            ><a
+              class="text-body-sm text-on-surface-variant hover:text-primary transition-colors"
+              href="#"
+              >Documentation</a
+            ><a
+              class="text-body-sm text-on-surface-variant hover:text-primary transition-colors"
+              href="#"
+              >Help Center</a
+            ><a
+              class="text-body-sm text-on-surface-variant hover:text-primary transition-colors"
+              href="#"
+              >Blog</a
+            ><a
+              class="text-body-sm text-on-surface-variant hover:text-primary transition-colors"
+              href="#"
+              >Contact</a
+            >
+          </div>
+          <div class="flex flex-col gap-stack-sm">
+            <span class="font-label-md text-label-md text-on-surface mb-2"
+              >Company</span
+            ><a
+              class="text-body-sm text-on-surface-variant hover:text-primary transition-colors"
+              href="#"
+              >About</a
+            ><a
+              class="text-body-sm text-on-surface-variant hover:text-primary transition-colors"
+              href="#"
+              >Careers</a
+            ><a
+              class="text-body-sm text-on-surface-variant hover:text-primary transition-colors"
+              href="#"
+              >Contact</a
+            >
+          </div>
+          <div class="flex flex-col gap-stack-sm">
+            <span class="font-label-md text-label-md text-on-surface mb-2"
+              >Legal</span
+            ><a
+              class="text-body-sm text-on-surface-variant hover:text-primary transition-colors"
+              href="#"
+              >Privacy Policy</a
+            ><a
+              class="text-body-sm text-on-surface-variant hover:text-primary transition-colors"
+              href="#"
+              >Terms of Service</a
+            >
+          </div>
+        </div>
+        <div
+          class="pt-8 border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-stack-md"
+        >
+          <div class="flex items-center gap-2">
+            <div
+              class="w-6 h-6 bg-primary rounded flex items-center justify-center"
+            >
+              <span
+                class="material-symbols-outlined text-on-primary text-[14px]"
+                >flowsheet</span
+              >
+            </div>
+            <span class="font-headline-md text-[18px] text-on-surface"
+              >Hireflow AI</span
+            >
+          </div>
+          <p class="text-body-sm text-on-tertiary-fixed-variant">
+            © 2026 Hireflow AI. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

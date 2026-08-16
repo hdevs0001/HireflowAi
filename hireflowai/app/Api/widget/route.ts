@@ -181,7 +181,11 @@ export async function POST(req: NextRequest) {
       throw new ApiError(403, "Invalid widget origin");
     }
 
-    const COOLDOWN_DAYS = 30;
+    const company = await prisma.company.findUnique({
+      where: { id: companyId },
+      select: { applicationCooldownDays: true },
+    });
+    const COOLDOWN_DAYS = company?.applicationCooldownDays ?? 30;
     const recentApplication = await prisma.application.findFirst({
       where: { candidateId, jobId },
       orderBy: { createdAt: "desc" },

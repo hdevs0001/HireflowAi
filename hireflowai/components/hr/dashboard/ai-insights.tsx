@@ -1,6 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function AIInsights() {
+interface Props {
+  insights: {
+    highScoreCount: number;
+    needsSchedulingCount: number;
+    resumesProcessedToday: number;
+    averageScore: number | null;
+  };
+}
+
+export default function AIInsights({ insights }: Props) {
   return (
     <Card>
       <CardHeader>
@@ -8,10 +17,13 @@ export default function AIInsights() {
       </CardHeader>
 
       <CardContent className="space-y-3 text-sm">
-        <p>🔥 8 candidates have AI score above 90.</p>
-        <p>⚡ 5 interviews need scheduling.</p>
-        <p>📄 14 resumes processed today.</p>
-        <p>⭐ Average resume score: 84.</p>
+        <p>🔥 {insights.highScoreCount} candidates have AI score above 90.</p>
+        <p>⚡ {insights.needsSchedulingCount} interviews need scheduling.</p>
+        <p>📄 {insights.resumesProcessedToday} resumes processed today.</p>
+        <p>
+          ⭐ Average resume score:{" "}
+          {insights.averageScore !== null ? insights.averageScore : "—"}.
+        </p>
       </CardContent>
     </Card>
   );

@@ -1,71 +1,103 @@
 "use client";
-
+import Link from "next/link";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 
-import CandidateStatusBadge from "./candidate-status-badge";
+import StatusChangeMenu from "./status-change-menu";
 import CandidateScore from "./candidate-score";
 
-import { Candidate } from "./types";
+import { CandidateRow } from "@/lib/queries/candidates";
+import ScheduleInterviewDialog from "./schedule-interview-dialog";
 
-export const columns: ColumnDef<Candidate>[] = [
+export const columns: ColumnDef<CandidateRow>[] = [
   {
-    accessorKey: "name",
+    id: "name",
     header: "Name",
-  },
-
-  {
-    accessorKey: "email",
-    header: "Email",
-  },
-
-  {
-    accessorKey: "phone",
-    header: "Phone",
-  },
-
-  {
-    accessorKey: "resume",
-
-    header: "Resume",
-
     cell: ({ row }) => (
-      <Button
-       
-        variant="outline"
-        size="sm"
+      <Link
+        href={`/hr/candidate/${row.original.id}`}
+        className="font-medium hover:underline"
       >
-        <a
-          href={row.original.resume}
-          target="_blank"
-        >
-          View Resume
-        </a>
-      </Button>
+        {row.original.candidate.name ?? "—"}
+      </Link>
     ),
   },
 
   {
-    accessorKey: "aiScore",
+    id: "email",
+    header: "Email",
+    accessorFn: (row) => row.candidate.email ?? "—",
+  },
 
+  {
+    id: "phone",
+    header: "Phone",
+    accessorFn: (row) => row.candidate.phone ?? "—",
+  },
+
+  {
+    id: "resume",
+    header: "Resume",
+    cell: ({ row }) => {
+      const url = row.original.resumePublicUrl ?? row.original.resumeUrl;
+      if (!url)
+        return <span className="text-muted-foreground text-sm">No resume</span>;
+
+      return (
+        <Button variant="outline" size="sm">
+          <a href={url} target="_blank" rel="noopener noreferrer">
+            View Resume
+          </a>
+        </Button>
+      );
+    },
+  },
+
+  {
+    id: "aiScore",
     header: "AI Score",
+    cell: ({ row }) => {
+      const score = row.original.aiEvaluation?.aiScore;
+      if (score === undefined) {
+        return <span className="text-muted-foreground text-sm">Pending</span>;
+      }
+      return <CandidateScore score={score} />;
+    },
+  },
 
+  {
+    id: "status",
+    header: "Status",
     cell: ({ row }) => (
-      <CandidateScore
-        score={row.original.aiScore}
+      <StatusChangeMenu
+        applicationId={row.original.id}
+        currentStatus={row.original.candidateStatus}
       />
     ),
   },
 
   {
-    accessorKey: "status",
+    id: "nextAction",
+    header: "Next Action",
+    cell: ({ row }) => {
+      const { label, urgent } = row.original.nextAction;
+      const isScheduleAction =
+        row.original.candidateStatus === "INTERVIEWING" &&
+        row.original.interviews.length === 0;
 
-    header: "Status",
+      if (isScheduleAction) {
+        return <ScheduleInterviewDialog applicationId={row.original.id} />;
+      }
 
-    cell: ({ row }) => (
-      <CandidateStatusBadge
-        status={row.original.status}
-      />
-    ),
+      return (
+        <span
+          className={
+            urgent ? "text-red-600 font-medium" : "text-muted-foreground"
+          }
+        >
+          {label}
+        </span>
+      );
+    },
   },
 ];

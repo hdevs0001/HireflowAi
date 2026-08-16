@@ -1,28 +1,18 @@
 import { Badge } from "@/components/ui/badge";
+import { InterStatusEnum } from "@prisma/client";
+import {
+  INTERVIEW_STATUS_LABELS,
+  INTERVIEW_STATUS_STYLES,
+} from "@/lib/utils/interview-status";
 
 interface Props {
-  status: "Scheduled" | "In Progress" | "Completed";
+  status: InterStatusEnum;
 }
 
-export default function InterviewStatusBadge({
-  status,
-}: Props) {
-  switch (status) {
-    case "Scheduled":
-      return <Badge>Scheduled</Badge>;
-
-    case "In Progress":
-      return (
-        <Badge className="bg-blue-500 hover:bg-blue-500">
-          In Progress
-        </Badge>
-      );
-
-    default:
-      return (
-        <Badge className="bg-green-500 hover:bg-green-500">
-          Completed
-        </Badge>
-      );
-  }
+export default function InterviewStatusBadge({ status }: Props) {
+  return (
+    <Badge className={INTERVIEW_STATUS_STYLES[status]}>
+      {INTERVIEW_STATUS_LABELS[status]}
+    </Badge>
+  );
 }

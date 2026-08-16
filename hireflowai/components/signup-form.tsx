@@ -65,7 +65,7 @@ export function SignupForm({
       password: "",
       confirmPassword: "",
     });
-    router.push("/login");
+ 
   };
   return (
     <form

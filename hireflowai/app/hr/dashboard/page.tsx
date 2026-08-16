@@ -1,43 +1,53 @@
 import DashboardStats from "@/components/hr/dashboard/dashboard-stats";
-import InterviewsToday from "@/components/hr/dashboard/interviews-today";
-import RecentCandidates from "@/components/hr/dashboard/recent-candidates";
 import HiringPipeline from "@/components/hr/dashboard/hiring-pipeline";
-import UpcomingInterviews from "@/components/hr/dashboard/upcoming-interviews";
+import InterviewsToday from "@/components/hr/dashboard/interviews-today";
+import RecentActivity from "@/components/hr/dashboard/recent-activity";
 import AIInsights from "@/components/hr/dashboard/ai-insights";
 import QuickActions from "@/components/hr/dashboard/quick-actions";
-import RecentActivity from "@/components/hr/dashboard/recent-activity";
+import { auth } from "@/auth";
+import {
+  getDashboardStats,
+  getPipelineFunnel,
+  getRecentActivity,
+  getInterviewsToday,
+  getAIInsights,
+  getNeedsAttention,
+} from "@/lib/queries/dashboard";
+import NeedsAttentionPanel from "@/components/hr/dashboard/needs-attention-panel";
+// ...other imports unchanged
+export default async function DashboardPage() {
+  const session = await auth();
+  const companyId = session?.user?.companyId;
 
-export default function DashboardPage() {
+  if (!companyId) return <div>Unauthorized</div>;
+
+  const [stats, funnel, interviews, activity, insights, attention] =
+    await Promise.all([
+      getDashboardStats(companyId),
+      getPipelineFunnel(companyId),
+      getInterviewsToday(companyId),
+      getRecentActivity(companyId),
+      getAIInsights(companyId),
+      getNeedsAttention(companyId),
+    ]);
+
   return (
-    <main className="space-y-6 p-6">
-      <div>
-        <h1 className="text-3xl font-bold">HR Dashboard</h1>
+    <div className="space-y-6 p-4">
+      <DashboardStats stats={stats} />
 
-        <p className="text-muted-foreground">
-          Welcome back! Here's today's hiring overview.
-        </p>
+      <NeedsAttentionPanel attention={attention} />
+
+      <div className="grid gap-5 md:grid-cols-2">
+        <HiringPipeline funnel={funnel} />
+        <InterviewsToday interviews={interviews} />
       </div>
 
-      <DashboardStats />
-
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
-          <RecentCandidates />
-          <HiringPipeline />
-        </div>
-
-        <div className="space-y-6">
-          <InterviewsToday />
-          <UpcomingInterviews />
-        </div>
+      <div className="grid gap-5 md:grid-cols-2">
+        <AIInsights insights={insights} />
+        <QuickActions />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <AIInsights />
-        <RecentActivity />
-      </div>
-
-      <QuickActions />
-    </main>
+      <RecentActivity activity={activity} />
+    </div>
   );
 }

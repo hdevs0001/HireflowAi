@@ -16,6 +16,10 @@ export const adminNav: NavItem[] = [
     href: "/admin/widget",
   },
   {
+    label: "Jobs",
+    href: "/admin/jobs",
+  },
+  {
     label: "User",
     href: "/admin/user",
   },
@@ -42,10 +46,19 @@ export const hrNav: NavItem[] = [
     label: "Interviews",
     href: "/hr/interviews",
   },
+    {
+    label: "Jobs",
+    href: "/hr/job",
+  },
+    {
+    label: "Widgets",
+    href: "/hr/widget",
+  },
   {
     label: "Analytics",
     href: "/hr/analytics",
   },
+
 ];
 
 export const superUserNav: NavItem[] = [

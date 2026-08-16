@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -46,8 +46,6 @@ export function LoginForm({
       email: "",
       password: "",
     });
-    router.push("/");
-    router.refresh();
   };
   return (
     <form
@@ -100,7 +98,7 @@ export function LoginForm({
             variant="outline"
             type="button"
             onClick={() => {
-              signIn("github", { callbackUrl: "/" });
+              signIn("github", { callbackUrl: "/onboard" });
             }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -115,7 +113,7 @@ export function LoginForm({
             variant="outline"
             type="button"
             onClick={() => {
-              signIn("google", { callbackUrl: "/" });
+              signIn("google", { callbackUrl: "/onboard" });
             }}
           >
             <svg

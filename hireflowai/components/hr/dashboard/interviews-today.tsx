@@ -1,29 +1,41 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { format } from "date-fns";
+import { InterStatusEnum } from "@prisma/client";
 
-const interviews = [
-  {
-    name: "John Smith",
-    role: "Frontend Developer",
-    time: "10:00 AM",
-    status: "Upcoming",
-  },
-  {
-    name: "Emma Watson",
-    role: "Backend Developer",
-    time: "12:30 PM",
-    status: "Live",
-  },
-  {
-    name: "Michael Lee",
-    role: "Designer",
-    time: "3:00 PM",
-    status: "Pending",
-  },
-];
+interface InterviewItem {
+  id: string;
+  interviewTime: Date | null;
+  interViewStatus: InterStatusEnum;
+  candidate: { name: string | null };
+  application: { job: { title: string } } | null;
+}
 
-export default function InterviewsToday() {
+interface Props {
+  interviews: InterviewItem[];
+}
+
+const STATUS_DISPLAY: Record<InterStatusEnum, string> = {
+  SCHEDULED: "Upcoming",
+  IN_PROGRESS: "Live",
+  COMPLETED: "Completed",
+};
+
+export default function InterviewsToday({ interviews }: Props) {
+  if (interviews.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Today's Interviews</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">No interviews scheduled today.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -32,28 +44,25 @@ export default function InterviewsToday() {
 
       <CardContent className="space-y-5">
         {interviews.map((item) => (
-          <div
-            key={item.name}
-            className="flex items-center justify-between"
-          >
+          <div key={item.id} className="flex items-center justify-between">
             <div className="flex gap-3">
               <Avatar>
                 <AvatarFallback>
-                  {item.name.slice(0, 2)}
+                  {(item.candidate.name ?? "??").slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
 
               <div>
-                <p className="font-medium">{item.name}</p>
+                <p className="font-medium">{item.candidate.name ?? "Unknown"}</p>
                 <p className="text-sm text-muted-foreground">
-                  {item.role}
+                  {item.application?.job.title ?? "—"}
                 </p>
               </div>
             </div>
 
             <div className="text-right">
-              <p>{item.time}</p>
-              <Badge>{item.status}</Badge>
+              <p>{item.interviewTime ? format(item.interviewTime, "h:mm a") : "—"}</p>
+              <Badge>{STATUS_DISPLAY[item.interViewStatus]}</Badge>
             </div>
           </div>
         ))}

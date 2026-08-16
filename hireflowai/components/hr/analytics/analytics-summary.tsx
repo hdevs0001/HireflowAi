@@ -1,41 +1,38 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function AnalyticsSummary() {
+interface Props {
+  summary: {
+    acceptanceRate: number;
+    interviewRate: number;
+    rejectionRate: number;
+    averageAiScore: number | null;
+  };
+}
+
+export default function AnalyticsSummary({ summary }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>
-          Hiring Insights
-        </CardTitle>
+        <CardTitle>Hiring Insights</CardTitle>
       </CardHeader>
 
       <CardContent className="space-y-4">
-
         <div className="flex justify-between">
           <span>Acceptance Rate</span>
-          <strong>27.4%</strong>
+          <strong>{summary.acceptanceRate}%</strong>
         </div>
-
         <div className="flex justify-between">
           <span>Interview Rate</span>
-          <strong>14.9%</strong>
+          <strong>{summary.interviewRate}%</strong>
         </div>
-
         <div className="flex justify-between">
           <span>Rejection Rate</span>
-          <strong>57.7%</strong>
+          <strong>{summary.rejectionRate}%</strong>
         </div>
-
         <div className="flex justify-between">
           <span>Average AI Resume Score</span>
-          <strong>84 / 100</strong>
+          <strong>{summary.averageAiScore !== null ? `${summary.averageAiScore} / 100` : "—"}</strong>
         </div>
-
       </CardContent>
     </Card>
   );
