@@ -1,0 +1,11 @@
+export { default as FrontendLandingPage } from "./FrontendLandingPage";
+export { default as Navbar } from "./Navbar";
+export { default as HeroSection } from "./HeroSection";
+export { default as ProblemSection } from "./ProblemSection";
+export { default as HowItWorksSection } from "./HowItWorksSection";
+export { default as WidgetSection } from "./WidgetSection";
+export { default as AiEvaluationSection } from "./AiEvaluationSection";
+export { default as PipelineDashboardSection } from "./PipelineDashboardSection";
+export { default as PricingSection } from "./PricingSection";
+export { default as FinalCtaSection } from "./FinalCtaSection";
+export { default as Footer } from "./Footer";
